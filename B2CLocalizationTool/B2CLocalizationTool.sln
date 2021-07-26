@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31424.327
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Client", "B2CLocalizationTool.Client\B2CLocalizationTool.Client.csproj", "{491F3718-9405-4490-A39A-80E09BFD51E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Service", "B2CLocalizationTool.Service\B2CLocalizationTool.Service.csproj", "{B3F8498E-B936-495C-9B95-D2AFC600749A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{491F3718-9405-4490-A39A-80E09BFD51E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{491F3718-9405-4490-A39A-80E09BFD51E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{491F3718-9405-4490-A39A-80E09BFD51E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{491F3718-9405-4490-A39A-80E09BFD51E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F8498E-B936-495C-9B95-D2AFC600749A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F8498E-B936-495C-9B95-D2AFC600749A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F8498E-B936-495C-9B95-D2AFC600749A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F8498E-B936-495C-9B95-D2AFC600749A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {208A6BFA-F3FE-4AE8-98C4-AF31FEC10D4A}
+	EndGlobalSection
+EndGlobal

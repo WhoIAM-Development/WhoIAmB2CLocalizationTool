@@ -17,18 +17,18 @@ namespace B2CLocalizationTool.Service.Extensions
 
                 foreach (DataRow row in dataSet.Tables[0].Rows)
                 {
-                    for (int i = 4; i < row.ItemArray.Length; i++)
+                    for (int i = Constants.LanguageIndex; i < row.ItemArray.Length; i++)
                     {
                         if (!string.IsNullOrEmpty(row.ItemArray[i].ToString()))
                         {
-                            var model = new LocalizationModel();
-                            model.Resource = $"{row.ItemArray[0]}.{row.Table.Columns[i]}";
-                            model.ElementType = row.ItemArray[1].ToString();
-                            model.ElementId = row.ItemArray[2].ToString();
-                            model.StringId = row.ItemArray[3].ToString();
-                            model.Value = row.ItemArray[i].ToString();
-
-                            list.Add(model);
+                            list.Add(new LocalizationModel
+                            {
+                                Resource = $"{row.Field<string>(Constants.Resource)}.{row.Table.Columns[i]}",
+                                ElementType = row.Field<string>(Constants.ElementType),
+                                ElementId = row.Field<string>(Constants.ElementId),
+                                StringId = row.Field<string>(Constants.StringId),
+                                Value = row.ItemArray[i].ToString()
+                            });
                         }
                     }
                 }
@@ -41,21 +41,21 @@ namespace B2CLocalizationTool.Service.Extensions
         {
             XmlDocument doc = new XmlDocument();
             XmlDeclaration declaire = doc.CreateXmlDeclaration("1.0", "utf-8", null);
-            XmlElement rootnode = doc.CreateElement("Localization");
-            rootnode.SetAttribute("Enabled", "true");
+            XmlElement rootnode = doc.CreateElement(Constants.Localization);
+            rootnode.SetAttribute(Constants.Enabled, "true");
             doc.InsertBefore(declaire, doc.DocumentElement);
 
             foreach (var resources in localizationResources)
             {
-                XmlElement localizedResourcesNode = doc.CreateElement("LocalizedResources");
-                localizedResourcesNode.SetAttribute("Id", resources.Key);
+                XmlElement localizedResourcesNode = doc.CreateElement(Constants.LocalizedResources);
+                localizedResourcesNode.SetAttribute(Constants.Id, resources.Key);
 
                 foreach (var resource in resources)
                 {
-                    XmlElement localizedStringElement = doc.CreateElement("LocalizedString");
-                    localizedStringElement.SetAttribute("ElementType", resource.ElementType);
-                    localizedStringElement.SetAttribute("ElementId", resource.ElementId);
-                    localizedStringElement.SetAttribute("StringId", resource.StringId);
+                    XmlElement localizedStringElement = doc.CreateElement(Constants.LocalizedString);
+                    localizedStringElement.SetAttribute(Constants.ElementType, resource.ElementType);
+                    localizedStringElement.SetAttribute(Constants.ElementId, resource.ElementId);
+                    localizedStringElement.SetAttribute(Constants.StringId, resource.StringId);
                     localizedStringElement.InnerText = resource.Value;
 
                     localizedResourcesNode.AppendChild(localizedStringElement);

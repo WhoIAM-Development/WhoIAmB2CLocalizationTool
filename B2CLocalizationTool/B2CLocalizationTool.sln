@@ -11,6 +11,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Service
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Infrastructure", "B2CLocalizationTool.Infrastructure\B2CLocalizationTool.Infrastructure.csproj", "{69D17071-68FE-4D86-ACF9-CB3374D31FD4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - Client", "01 - Client", "{4D0023C1-C0F7-42B6-85C9-B91F93E58BBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - Infrastructure", "02 - Infrastructure", "{DC0F6095-0012-46CE-A74E-F547A046F851}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 - Service", "03 - Service", "{FC529935-BEBA-416D-8310-FC6C32004928}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +42,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{491F3718-9405-4490-A39A-80E09BFD51E7} = {4D0023C1-C0F7-42B6-85C9-B91F93E58BBF}
+		{B3F8498E-B936-495C-9B95-D2AFC600749A} = {FC529935-BEBA-416D-8310-FC6C32004928}
+		{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C} = {DC0F6095-0012-46CE-A74E-F547A046F851}
+		{69D17071-68FE-4D86-ACF9-CB3374D31FD4} = {DC0F6095-0012-46CE-A74E-F547A046F851}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {208A6BFA-F3FE-4AE8-98C4-AF31FEC10D4A}

@@ -1,7 +1,7 @@
 ﻿namespace B2CLocalizationTool.Service.Model
 {
 
-    internal class LocalizationInputModel
+    public class LocalizationModel
     {
         public string Resource { get; set; }
         public string ElementType { get; set; }

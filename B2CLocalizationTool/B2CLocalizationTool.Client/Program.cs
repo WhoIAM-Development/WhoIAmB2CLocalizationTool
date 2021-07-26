@@ -1,3 +1,4 @@
+using B2CLocalizationTool.Infrastructure;
 using B2CLocalizationTool.Service;
 using B2CLocalizationTool.Service.Abstract;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,20 +22,14 @@ namespace B2CLocalizationTool.Client
             Application.SetCompatibleTextRenderingDefault(false);
 
             var services = new ServiceCollection();
-            ConfigureServices(services);
+            RegisterServices.ConfigureServices(services);
+            services.AddScoped<BaseForm>();
 
             using (ServiceProvider serviceProvider = services.BuildServiceProvider())
             {
                 var baseForm = serviceProvider.GetRequiredService<BaseForm>();
                 Application.Run(baseForm);
             }
-        }
-
-
-        private static void ConfigureServices(ServiceCollection services)
-        {
-            services.AddScoped<IExternalDataService, ExternalDataService>();
-            services.AddScoped<BaseForm>();
         }
     }
 }

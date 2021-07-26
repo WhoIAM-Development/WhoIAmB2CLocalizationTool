@@ -18,6 +18,21 @@ namespace B2CLocalizationTool.Service.Utility
             }
         }
 
+        internal static DataSet ReadCsvFile(string fileName)
+        {
+            using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read))
+            {
+                var config = new ExcelReaderConfiguration();
+                config.AnalyzeInitialCsvRows = 500;
+                using (var reader = ExcelReaderFactory.CreateCsvReader(stream))
+                {
+                    var fileData = ReadFile(reader);
+                    return fileData;
+                }
+
+            }
+        }
+
         private static DataSet ReadFile(IExcelDataReader reader)
         {
             try
@@ -32,7 +47,7 @@ namespace B2CLocalizationTool.Service.Utility
             }
             catch (Exception e)
             {
-                return null;
+                throw e;
             }
         }
     }

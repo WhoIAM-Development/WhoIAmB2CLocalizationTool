@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Client"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Service", "B2CLocalizationTool.Service\B2CLocalizationTool.Service.csproj", "{B3F8498E-B936-495C-9B95-D2AFC600749A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Service.Abstract", "B2CLocalizationTool.Service.Abstract\B2CLocalizationTool.Service.Abstract.csproj", "{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Infrastructure", "B2CLocalizationTool.Infrastructure\B2CLocalizationTool.Infrastructure.csproj", "{69D17071-68FE-4D86-ACF9-CB3374D31FD4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{B3F8498E-B936-495C-9B95-D2AFC600749A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3F8498E-B936-495C-9B95-D2AFC600749A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3F8498E-B936-495C-9B95-D2AFC600749A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69D17071-68FE-4D86-ACF9-CB3374D31FD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D17071-68FE-4D86-ACF9-CB3374D31FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D17071-68FE-4D86-ACF9-CB3374D31FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D17071-68FE-4D86-ACF9-CB3374D31FD4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

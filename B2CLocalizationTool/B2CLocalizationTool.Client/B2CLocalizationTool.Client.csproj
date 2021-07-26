@@ -13,7 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\B2CLocalizationTool.Service\B2CLocalizationTool.Service.csproj" />
+    <ProjectReference Include="..\B2CLocalizationTool.Infrastructure\B2CLocalizationTool.Infrastructure.csproj" />
+    <ProjectReference Include="..\B2CLocalizationTool.Service.Abstract\B2CLocalizationTool.Service.Abstract.csproj" />
   </ItemGroup>
 
 </Project>

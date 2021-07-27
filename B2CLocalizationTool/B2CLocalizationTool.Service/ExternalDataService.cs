@@ -42,9 +42,9 @@ namespace B2CLocalizationTool.Service
         }
 
 
-        public string WriteXmlToFile(XmlDocument document, string outputPath = null)
+        public string WriteXmlToFile(XmlDocument document, string inputPath = null, string outputPath = null)
         {
-            return XMLUtility.WriteToXMLFile(document, outputPath);
+            return XMLUtility.WriteToXMLFile(document, inputPath, outputPath);
         }
 
         private DataSet ReadFullExcelFile(string path)

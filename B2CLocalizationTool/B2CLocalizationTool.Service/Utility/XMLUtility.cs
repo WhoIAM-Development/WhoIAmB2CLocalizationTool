@@ -1,17 +1,19 @@
 ﻿using System;
+using System.IO;
 using System.Xml;
 
 namespace B2CLocalizationTool.Service.Utility
 {
     internal static class XMLUtility
     {
-        internal static string WriteToXMLFile(XmlDocument xml, string outputPath = null)
+        internal static string WriteToXMLFile(XmlDocument xml, string inputPath, string outputPath = null)
         {
+            string outputFileName = Path.GetFileNameWithoutExtension(inputPath);
             if (string.IsNullOrEmpty(outputPath))
             {
                 outputPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             }
-            var completeFileName = $"{outputPath}\\Localization{DateTimeOffset.Now.ToUnixTimeSeconds()}.xml";
+            var completeFileName = $"{outputPath}\\{outputFileName}_{DateTimeOffset.Now.ToUnixTimeSeconds()}.xml";
             xml.Save(completeFileName);
             return completeFileName;
         }

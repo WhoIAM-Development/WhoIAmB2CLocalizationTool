@@ -7,5 +7,6 @@ namespace B2CLocalizationTool.Service.Abstract
     {
         DataSet ReadFileAsDataSet(string path);
         string WriteXmlToFile(XmlDocument document, string outputPath = null);
+        XmlDocument ReadXml(string fileName);
     }
 }

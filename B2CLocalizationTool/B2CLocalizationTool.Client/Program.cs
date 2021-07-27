@@ -15,6 +15,8 @@ namespace B2CLocalizationTool.Client
         [STAThread]
         static void Main()
         {
+            // This is needed for reading from excel without errors in .net core.
+            // https://github.com/ExcelDataReader/ExcelDataReader
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);

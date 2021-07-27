@@ -8,12 +8,12 @@ namespace B2CLocalizationTool.Service.Extensions
 {
     internal static class LocalizationModelExtension
     {
-        internal static IEnumerable<IGrouping<string, LocalizationModel>> ToLocalizationModel(this DataSet dataSet)
+        internal static IEnumerable<IGrouping<string, LocalizationInputModel>> ToLocalizationModel(this DataSet dataSet)
         {
 
             if (dataSet != null && dataSet.Tables != null && dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows != null && dataSet.Tables[0].Rows.Count > 0)
             {
-                var list = new List<LocalizationModel>();
+                var list = new List<LocalizationInputModel>();
 
                 foreach (DataRow row in dataSet.Tables[0].Rows)
                 {
@@ -21,7 +21,7 @@ namespace B2CLocalizationTool.Service.Extensions
                     {
                         if (!string.IsNullOrEmpty(row.ItemArray[i].ToString()))
                         {
-                            list.Add(new LocalizationModel
+                            list.Add(new LocalizationInputModel
                             {
                                 Resource = $"{row.Field<string>(Constants.Resource)}.{row.Table.Columns[i]}",
                                 ElementType = row.Field<string>(Constants.ElementType),
@@ -37,7 +37,7 @@ namespace B2CLocalizationTool.Service.Extensions
             return null;
         }
 
-        internal static XmlDocument ToXml(this IEnumerable<IGrouping<string, LocalizationModel>> localizationResources)
+        internal static XmlDocument ToXml(this IEnumerable<IGrouping<string, LocalizationInputModel>> localizationResources)
         {
             XmlDocument doc = new XmlDocument();
             XmlDeclaration declaire = doc.CreateXmlDeclaration("1.0", "utf-8", null);
@@ -66,6 +66,63 @@ namespace B2CLocalizationTool.Service.Extensions
             }
 
             return doc;
+        }
+
+
+        internal static IEnumerable<LocalizationOutputModel> ToLocalizationModels(this XmlDocument document)
+        {
+            if (document != null)
+            {
+                XmlNodeList nl = document.SelectNodes(Constants.Localization);
+                if (nl != null && nl[0] != null && nl[0].ChildNodes.Count > 0)
+                {
+                    var root = nl[0];
+
+                    var localizationModels = new List<LocalizationOutputModel>();
+                    foreach (XmlNode xnode in root.ChildNodes)
+                    {
+                        var resourceId = xnode.Attributes[Constants.Id].Value;
+                        var splitArray = resourceId.Split(".");
+                        var resourceLanguage = splitArray.Last();
+                        var resourceIdWithoutLanguage = string.Join(".", splitArray.SkipLast(1));
+
+                        foreach (XmlNode lsNode in xnode.ChildNodes)
+                        {
+                            var existingLocalization = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
+                                && x.ElementType == lsNode.Attributes[Constants.ElementType].Value
+                                && x.ElementId == lsNode.Attributes[Constants.ElementId].Value
+                                && x.StringId == lsNode.Attributes[Constants.StringId].Value);
+                            if (existingLocalization != null)
+                            {
+                                existingLocalization.LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText, existingLocalization.LanguageValues);
+                            }
+                            else
+                            {
+                                localizationModels.Add(new LocalizationOutputModel()
+                                {
+                                    Resource = resourceIdWithoutLanguage,
+                                    ElementType = lsNode.Attributes[Constants.ElementType].Value,
+                                    ElementId = lsNode.Attributes[Constants.ElementId].Value,
+                                    StringId = lsNode.Attributes[Constants.StringId].Value,
+                                    LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText)
+                                });
+                            }
+                        }
+                    }
+                    return localizationModels;
+                }
+            }
+            return null;
+        }
+
+        private static Dictionary<string, string> AddToLanguageValues(string languageKey, string value, Dictionary<string, string> existingCollection = null)
+        {
+            if (existingCollection == null)
+            {
+                existingCollection = new Dictionary<string, string>();
+            }
+            existingCollection.Add(languageKey, value);
+            return existingCollection;
         }
     }
 }

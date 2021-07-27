@@ -15,5 +15,12 @@ namespace B2CLocalizationTool.Service.Utility
             xml.Save(completeFileName);
             return completeFileName;
         }
+
+        internal static XmlDocument ReadXMLFile(string fileName)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(fileName);
+            return doc;
+        }
     }
 }

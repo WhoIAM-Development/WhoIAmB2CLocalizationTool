@@ -22,6 +22,11 @@ namespace B2CLocalizationTool.Service
             }
         }
 
+        public XmlDocument ReadXml(string fileName)
+        {
+            return XMLUtility.ReadXMLFile(fileName);
+        }
+
 
         public string WriteXmlToFile(XmlDocument document, string outputPath = null)
         {

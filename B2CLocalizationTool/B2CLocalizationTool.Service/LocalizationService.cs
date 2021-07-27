@@ -1,5 +1,8 @@
 ﻿using B2CLocalizationTool.Service.Abstract;
 using B2CLocalizationTool.Service.Extensions;
+using B2CLocalizationTool.Service.Model;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace B2CLocalizationTool.Service
 {
@@ -17,6 +20,24 @@ namespace B2CLocalizationTool.Service
             var dataSet = _externalDataService.ReadFileAsDataSet(inputPath);
             var model = dataSet.ToLocalizationModel();
             return _externalDataService.WriteXmlToFile(model.ToXml(), outputPath);
+        }
+
+        public string ReadXmlAndWriteToExcel(string inputPath, string fileFormat, string outputPath = null)
+        {
+
+            var document = _externalDataService.ReadXml(inputPath);
+            var model = document.ToLocalizationModels();
+
+            if (fileFormat.ToLower().Trim() == "csv")
+            {
+                
+            } 
+            else
+            {
+                // Do nothing for now
+            }
+
+            return outputPath;
         }
     }
 }

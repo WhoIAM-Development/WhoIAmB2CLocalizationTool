@@ -48,6 +48,7 @@ namespace B2CLocalizationTool.Service.Extensions
             {
                 XmlElement localizedResourcesNode = doc.CreateElement(Constants.LocalizedResources);
                 localizedResourcesNode.SetAttribute(Constants.Id, resources.Key);
+                XmlElement localizedStringsNode = doc.CreateElement(Constants.LocalizedStrings);
 
                 foreach (var resource in resources)
                 {
@@ -61,13 +62,13 @@ namespace B2CLocalizationTool.Service.Extensions
                     if (!string.IsNullOrEmpty(resource.Value))
                         localizedStringElement.InnerText = resource.Value;
 
-                    localizedResourcesNode.AppendChild(localizedStringElement);
+                    localizedStringsNode.AppendChild(localizedStringElement);
                 }
 
+                localizedResourcesNode.AppendChild(localizedStringsNode);
                 rootnode.AppendChild(localizedResourcesNode);
-                doc.AppendChild(rootnode);
             }
-
+            doc.AppendChild(rootnode);
             return doc;
         }
 

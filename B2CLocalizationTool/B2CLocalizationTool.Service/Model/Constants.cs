@@ -7,6 +7,7 @@
         internal static string ElementId = "ElementId";
         internal static string StringId = "StringId";
         internal static string LocalizedResources = "LocalizedResources";
+        internal static string LocalizedStrings = "LocalizedStrings";
         internal static string Localization = "Localization";
         internal static string Id = "Id";
         internal static string Resource = "Resource";

@@ -1,6 +1,9 @@
-﻿using ExcelDataReader;
+﻿using CsvHelper;
+using ExcelDataReader;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 
 namespace B2CLocalizationTool.Service.Utility
@@ -31,6 +34,21 @@ namespace B2CLocalizationTool.Service.Utility
                 }
 
             }
+        }
+
+        internal static string WriteCSVFile(IEnumerable<object> input, string outputPath = null)
+        {
+            if (string.IsNullOrEmpty(outputPath))
+            {
+                outputPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            }
+            var completeFileName = $"{outputPath}\\Localization{DateTimeOffset.Now.ToUnixTimeSeconds()}.csv";
+            using (var writer = new StreamWriter(completeFileName))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteRecords(input);
+            }
+            return completeFileName;
         }
 
         private static DataSet ReadFile(IExcelDataReader reader)

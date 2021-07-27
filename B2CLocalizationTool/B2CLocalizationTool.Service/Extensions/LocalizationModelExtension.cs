@@ -42,7 +42,6 @@ namespace B2CLocalizationTool.Service.Extensions
             XmlDocument doc = new XmlDocument();
             XmlDeclaration declaire = doc.CreateXmlDeclaration("1.0", "utf-8", null);
             XmlElement rootnode = doc.CreateElement(Constants.Localization);
-            rootnode.SetAttribute(Constants.Enabled, "true");
             doc.InsertBefore(declaire, doc.DocumentElement);
 
             foreach (var resources in localizationResources)
@@ -53,10 +52,14 @@ namespace B2CLocalizationTool.Service.Extensions
                 foreach (var resource in resources)
                 {
                     XmlElement localizedStringElement = doc.CreateElement(Constants.LocalizedString);
-                    localizedStringElement.SetAttribute(Constants.ElementType, resource.ElementType);
-                    localizedStringElement.SetAttribute(Constants.ElementId, resource.ElementId);
-                    localizedStringElement.SetAttribute(Constants.StringId, resource.StringId);
-                    localizedStringElement.InnerText = resource.Value;
+                    if(!string.IsNullOrEmpty(resource.ElementType))
+                        localizedStringElement.SetAttribute(Constants.ElementType, resource.ElementType);
+                    if (!string.IsNullOrEmpty(resource.ElementId))
+                        localizedStringElement.SetAttribute(Constants.ElementId, resource.ElementId);
+                    if (!string.IsNullOrEmpty(resource.StringId))
+                        localizedStringElement.SetAttribute(Constants.StringId, resource.StringId);
+                    if (!string.IsNullOrEmpty(resource.Value))
+                        localizedStringElement.InnerText = resource.Value;
 
                     localizedResourcesNode.AppendChild(localizedStringElement);
                 }

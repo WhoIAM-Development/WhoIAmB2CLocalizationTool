@@ -1,6 +1,7 @@
 ﻿using B2CLocalizationTool.Service.Abstract;
 using B2CLocalizationTool.Service.Utility;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Xml;
@@ -20,6 +21,19 @@ namespace B2CLocalizationTool.Service
                 case ".csv": return ReadFullCsvFile(fileName);
                 default: throw new Exception("Input file cannot be parsed because it is not in an expected format.");
             }
+        }
+
+        public string WriteToExcelOrCSV (IEnumerable<object> input, string fileFormat, string outputPath = null)
+        {
+            if (fileFormat.ToLower().Trim() == "csv")
+            {
+                return ExcelCsvUtility.WriteCSVFile(input, outputPath);
+            }
+            else
+            {
+                // Do nothing for now
+            }
+            return null;
         }
 
         public XmlDocument ReadXml(string fileName)

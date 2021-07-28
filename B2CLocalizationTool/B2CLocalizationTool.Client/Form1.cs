@@ -89,9 +89,6 @@ namespace B2CLocalizationTool.Client
 
         private void convertToExcelButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show($"Not implemented!", "Convert to CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            return;
-
             //var outputPath = _localizationService.ReadXmlAndWriteToExcel(xmlInputFilePathTextBox.Text, outputFileFormatComboBox.SelectedItem.ToString(), excelOutputFolderPathTextBox.Text);
             var outputPath = _localizationService.ReadXmlAndWriteToExcel(xmlInputFilePathTextBox.Text, "csv", excelOutputFolderPathTextBox.Text);
 

@@ -21,11 +21,8 @@ namespace B2CLocalizationTool.Service
 
         public string ReadXmlAndWriteToExcel(string inputPath, string fileFormat, string outputPath = null)
         {
-
             var document = _externalDataService.ReadXml(inputPath);
-            var model = document.ToLocalizationModels();
-
-            return _externalDataService.WriteToExcelOrCSV(model, fileFormat, outputPath);
+            return _externalDataService.WriteToExcelOrCSV(document, inputPath, fileFormat, outputPath);
         }
     }
 }

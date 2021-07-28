@@ -1,7 +1,10 @@
 ﻿using B2CLocalizationTool.Service.Model;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml;
 
 namespace B2CLocalizationTool.Service.Extensions
@@ -73,29 +76,37 @@ namespace B2CLocalizationTool.Service.Extensions
         }
 
 
-        internal static IEnumerable<LocalizationOutputModel> ToLocalizationModels(this XmlDocument document)
+        // this method is quite bloated and very inefficient, needs to redo this.
+        internal static string ToCSVString(this XmlDocument document)
         {
             if (document != null)
             {
-                XmlNodeList nl = document.SelectNodes(Constants.Localization);
-                if (nl != null && nl[0] != null && nl[0].ChildNodes.Count > 0)
+                XmlNode lnode = document.SelectSingleNode(Constants.Localization);
+                if (lnode != null && lnode.ChildNodes.Count > 0)
                 {
-                    var root = nl[0];
-
                     var localizationModels = new List<LocalizationOutputModel>();
-                    foreach (XmlNode xnode in root.ChildNodes)
+                    List<string> langauges = new List<string> { };
+                    foreach (XmlNode xnode in lnode.ChildNodes)
                     {
                         var resourceId = xnode.Attributes[Constants.Id].Value;
                         var splitArray = resourceId.Split(".");
                         var resourceLanguage = splitArray.Last();
+
+                        if (!langauges.Contains(resourceLanguage))
+                        {
+                            langauges.Add(resourceLanguage);
+                        }
+
                         var resourceIdWithoutLanguage = string.Join(".", splitArray.SkipLast(1));
 
-                        foreach (XmlNode lsNode in xnode.ChildNodes)
+                        var localizedStrings = xnode.SelectSingleNode(Constants.LocalizedStrings);
+
+                        foreach (XmlNode lsNode in localizedStrings.ChildNodes)
                         {
                             var existingLocalization = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
-                                && x.ElementType == lsNode.Attributes[Constants.ElementType].Value
-                                && x.ElementId == lsNode.Attributes[Constants.ElementId].Value
-                                && x.StringId == lsNode.Attributes[Constants.StringId].Value);
+                                && x.ElementType == lsNode.Attributes[Constants.ElementType]?.Value
+                                && x.ElementId == lsNode.Attributes[Constants.ElementId]?.Value
+                                && x.StringId == lsNode.Attributes[Constants.StringId]?.Value);
                             if (existingLocalization != null)
                             {
                                 existingLocalization.LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText, existingLocalization.LanguageValues);
@@ -105,18 +116,64 @@ namespace B2CLocalizationTool.Service.Extensions
                                 localizationModels.Add(new LocalizationOutputModel()
                                 {
                                     Resource = resourceIdWithoutLanguage,
-                                    ElementType = lsNode.Attributes[Constants.ElementType].Value,
-                                    ElementId = lsNode.Attributes[Constants.ElementId].Value,
-                                    StringId = lsNode.Attributes[Constants.StringId].Value,
-                                    LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText)
+                                    ElementType = lsNode.Attributes[Constants.ElementType]?.Value,
+                                    ElementId = lsNode.Attributes[Constants.ElementId]?.Value,
+                                    StringId = lsNode.Attributes[Constants.StringId]?.Value,
+                                    LanguageValues = AddToLanguageValues(resourceLanguage, lsNode?.InnerText)
                                 });
                             }
                         }
                     }
-                    return localizationModels;
+
+                    // This will fail will if xml does not have all the languages
+
+                    var csv = new StringBuilder();
+                    var headerLine = $"{PreProcess(Constants.Resource)},{PreProcess(Constants.ElementType)},{PreProcess(Constants.ElementId)},{PreProcess(Constants.StringId)}";
+                    foreach (var lang in langauges)
+                    {
+                        headerLine = $"{headerLine},{PreProcess(lang)}";
+                    }
+                    csv.AppendLine(headerLine);
+
+                    foreach (var item in localizationModels)
+                    {
+                        var newLine = $"{PreProcess(item.Resource)},{PreProcess(item.ElementType)},{PreProcess(item.ElementId)},{PreProcess(item.StringId)}";
+                        foreach (var langaugeKeys in item.LanguageValues)
+                        {
+                            newLine = $"{newLine},{PreProcess(langaugeKeys.Value)}";
+                        }
+                        csv.AppendLine(newLine);
+                    }
+                    return csv.ToString();
                 }
             }
             return null;
+        }
+
+        private static string PreProcess(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return string.Empty;
+
+            input = input.Replace('ı', 'i')
+                .Replace('ç', 'c')
+                .Replace('ö', 'o')
+                .Replace('ş', 's')
+                .Replace('ü', 'u')
+                .Replace('ğ', 'g')
+                .Replace('İ', 'I')
+                .Replace('Ç', 'C')
+                .Replace('Ö', 'O')
+                .Replace('Ş', 'S')
+                .Replace('Ü', 'U')
+                .Replace('Ğ', 'G')
+                .Replace("\"", "\"\"")
+                .Trim();
+            if (input.Contains(","))
+            {
+                input = "\"" + input + "\"";
+            }
+            return input;
         }
 
         private static Dictionary<string, string> AddToLanguageValues(string languageKey, string value, Dictionary<string, string> existingCollection = null)

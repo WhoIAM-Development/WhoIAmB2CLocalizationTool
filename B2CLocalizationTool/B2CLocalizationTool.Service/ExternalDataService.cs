@@ -1,5 +1,7 @@
 ﻿using B2CLocalizationTool.Service.Abstract;
+using B2CLocalizationTool.Service.Extensions;
 using B2CLocalizationTool.Service.Utility;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -23,11 +25,11 @@ namespace B2CLocalizationTool.Service
             }
         }
 
-        public string WriteToExcelOrCSV (IEnumerable<object> input, string fileFormat, string outputPath = null)
+        public string WriteToExcelOrCSV (XmlDocument document, string inputPath, string fileFormat, string outputPath = null)
         {
             if (fileFormat.ToLower().Trim() == "csv")
             {
-                return ExcelCsvUtility.WriteCSVFile(input, outputPath);
+                return ExcelCsvUtility.WriteCSVFile(document.ToCSVString(), inputPath, outputPath);
             }
             else
             {

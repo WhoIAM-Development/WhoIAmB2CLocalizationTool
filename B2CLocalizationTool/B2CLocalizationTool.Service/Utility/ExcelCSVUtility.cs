@@ -1,10 +1,8 @@
-﻿using CsvHelper;
-using ExcelDataReader;
+﻿using ExcelDataReader;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
+using System.Text;
 
 namespace B2CLocalizationTool.Service.Utility
 {
@@ -36,18 +34,17 @@ namespace B2CLocalizationTool.Service.Utility
             }
         }
 
-        internal static string WriteCSVFile(IEnumerable<object> input, string outputPath = null)
+        internal static string WriteCSVFile(string input, string inputPath, string outputPath = null)
         {
+            var outputFileName = Path.GetFileNameWithoutExtension(inputPath);
             if (string.IsNullOrEmpty(outputPath))
             {
                 outputPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             }
-            var completeFileName = $"{outputPath}\\Localization{DateTimeOffset.Now.ToUnixTimeSeconds()}.csv";
-            using (var writer = new StreamWriter(completeFileName))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
-            {
-                csv.WriteRecords(input);
-            }
+            var completeFileName = $"{outputPath}\\{outputFileName}{DateTimeOffset.Now.ToUnixTimeSeconds()}.csv";
+
+            File.WriteAllText(completeFileName, input, Encoding.UTF8);
+
             return completeFileName;
         }
 

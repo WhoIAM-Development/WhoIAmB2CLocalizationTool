@@ -125,8 +125,6 @@ namespace B2CLocalizationTool.Service.Extensions
                         }
                     }
 
-                    // This will fail will if xml does not have all the languages
-
                     var csv = new StringBuilder();
                     var headerLine = $"{PreProcess(Constants.Resource)},{PreProcess(Constants.ElementType)},{PreProcess(Constants.ElementId)},{PreProcess(Constants.StringId)}";
                     foreach (var lang in langauges)
@@ -138,9 +136,17 @@ namespace B2CLocalizationTool.Service.Extensions
                     foreach (var item in localizationModels)
                     {
                         var newLine = $"{PreProcess(item.Resource)},{PreProcess(item.ElementType)},{PreProcess(item.ElementId)},{PreProcess(item.StringId)}";
-                        foreach (var langaugeKeys in item.LanguageValues)
+
+                        foreach (var lang in langauges)
                         {
-                            newLine = $"{newLine},{PreProcess(langaugeKeys.Value)}";
+                            if (item.LanguageValues.ContainsKey(lang))
+                            {
+                                newLine = $"{newLine},{PreProcess(item.LanguageValues[lang])}";
+                            }
+                            else
+                            {
+                                newLine = $"{newLine},{string.Empty}";
+                            }
                         }
                         csv.AppendLine(newLine);
                     }

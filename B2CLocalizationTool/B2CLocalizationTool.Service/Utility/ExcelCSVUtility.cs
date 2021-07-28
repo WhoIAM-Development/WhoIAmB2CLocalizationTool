@@ -18,7 +18,7 @@ namespace B2CLocalizationTool.Service.Utility
 
         internal static DataSet ReadCsvFile(string fileName)
         {
-            using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read))
+            using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
                 var config = new ExcelReaderConfiguration();
                 config.AnalyzeInitialCsvRows = 500;

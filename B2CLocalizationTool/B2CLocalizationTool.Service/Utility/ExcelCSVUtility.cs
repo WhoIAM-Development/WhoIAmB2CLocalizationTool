@@ -12,13 +12,10 @@ namespace B2CLocalizationTool.Service.Utility
     {
         internal static DataSet ReadExcelFile(string fileName)
         {
-            using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    return ReadFile(reader);
-                }
-            }
+            using var stream = File.Open(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            using var reader = ExcelReaderFactory.CreateReader(stream);
+
+            return ReadFile(reader);
         }
 
         internal static DataSet ReadCsvFile(string fileName)

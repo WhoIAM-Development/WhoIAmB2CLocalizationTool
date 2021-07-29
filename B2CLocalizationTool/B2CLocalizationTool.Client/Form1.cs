@@ -17,6 +17,8 @@ namespace B2CLocalizationTool.Client
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            // Temporaryly added to hide this, since it won't work right now
+            tabControl1.TabPages.Remove(convertToExcelTab);
         }
 
         #region To XML Tab
@@ -32,13 +34,19 @@ namespace B2CLocalizationTool.Client
 
         private void convertToXMLFileButton_Click(object sender, EventArgs e)
         {
-            var outputPath = _localizationService.ReadInputAndWriteToXml(excelInputFilePathTextBox.Text, outputFolderPathTextBox.Text);
+            IResultDTO result = _localizationService.ReadInputAndWriteToXml(excelInputFilePathTextBox.Text, outputFolderPathTextBox.Text);
 
-            excelInputFilePathTextBox.Text = string.Empty;
-            chooseInputFileButton.Text = "Choose file";
+            if (result.IsSuccess)
+            {
+                excelInputFilePathTextBox.Text = string.Empty;
+                chooseInputFileButton.Text = "Choose file";
 
-            MessageBox.Show($"XML Creation completed. File stored to {outputPath}", "Convert to XML", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                MessageBox.Show($"XML Creation completed. File stored to {result.OutputPath}", "Convert to XML", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } 
+            else
+            {
+                MessageBox.Show($"Something went wrong", "Convert to XML", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void excelInputFilePath_TextChanged(object sender, EventArgs e)

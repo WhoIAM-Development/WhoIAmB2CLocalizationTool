@@ -1,8 +1,7 @@
 ﻿using B2CLocalizationTool.Service.Model;
-using Newtonsoft.Json.Linq;
+using B2CLocalizationTool.Service.Utility;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -11,6 +10,11 @@ namespace B2CLocalizationTool.Service.Extensions
 {
     internal static class LocalizationModelExtension
     {
+        internal static bool Validate(this IEnumerable<IGrouping<string, LocalizationInputModel>> localizationResources)
+        {
+            return true;
+        }
+
         internal static IEnumerable<IGrouping<string, LocalizationInputModel>> ToLocalizationModel(this DataSet dataSet)
         {
 
@@ -22,17 +26,19 @@ namespace B2CLocalizationTool.Service.Extensions
                 {
                     for (int i = Constants.LanguageIndex; i < row.ItemArray.Length; i++)
                     {
-                        if (!string.IsNullOrEmpty(row.ItemArray[i].ToString()))
+                        var temp = row[Constants.ItemValue];
+
+                        list.Add(new LocalizationInputModel
                         {
-                            list.Add(new LocalizationInputModel
-                            {
-                                Resource = $"{row.Field<string>(Constants.Resource)}.{row.Table.Columns[i]}",
-                                ElementType = row.Field<string>(Constants.ElementType),
-                                ElementId = row.Field<string>(Constants.ElementId),
-                                StringId = row.Field<string>(Constants.StringId),
-                                Value = row.ItemArray[i].ToString()
-                            });
-                        }
+                            Resource = $"{row.ToSafeString(Constants.Resource)}.{row.Table.Columns[i]}",
+                            ResourceType = row.ToSafeString(Constants.ResourceType),
+                            ElementType = row.ToSafeString(Constants.ElementType),
+                            ElementId = row.ToSafeString(Constants.ElementId),
+                            StringId = row.ToSafeString(Constants.StringId),
+                            TargetCollection = row.ToSafeString(Constants.TargetCollection),
+                            ItemValue = row.ToSafeString(Constants.ItemValue),
+                            LanguageValue = row.ItemArray[i].ToString()
+                        });
                     }
                 }
                 return list.GroupBy(x => x.Resource).ToList();
@@ -51,24 +57,80 @@ namespace B2CLocalizationTool.Service.Extensions
             {
                 XmlElement localizedResourcesNode = doc.CreateElement(Constants.LocalizedResources);
                 localizedResourcesNode.SetAttribute(Constants.Id, resources.Key);
+
                 XmlElement localizedStringsNode = doc.CreateElement(Constants.LocalizedStrings);
+                XmlElement localizedCollectionsNode = doc.CreateElement(Constants.LocalizedCollections);
 
                 foreach (var resource in resources)
                 {
-                    XmlElement localizedStringElement = doc.CreateElement(Constants.LocalizedString);
-                    if(!string.IsNullOrEmpty(resource.ElementType))
-                        localizedStringElement.SetAttribute(Constants.ElementType, resource.ElementType);
-                    if (!string.IsNullOrEmpty(resource.ElementId))
-                        localizedStringElement.SetAttribute(Constants.ElementId, resource.ElementId);
-                    if (!string.IsNullOrEmpty(resource.StringId))
-                        localizedStringElement.SetAttribute(Constants.StringId, resource.StringId);
-                    if (!string.IsNullOrEmpty(resource.Value))
-                        localizedStringElement.InnerText = resource.Value;
+                    if (resource.ResourceType == Constants.LocalizedString)
+                    {
+                        if (string.IsNullOrEmpty(resource.LanguageValue))
+                        {
+                            continue;
+                        }
 
-                    localizedStringsNode.AppendChild(localizedStringElement);
+                        XmlElement localizedStringElement = doc.CreateElement(Constants.LocalizedString);
+                        if (!string.IsNullOrEmpty(resource.ElementType))
+                            localizedStringElement.SetAttribute(Constants.ElementType, resource.ElementType);
+                        if (!string.IsNullOrEmpty(resource.ElementId))
+                            localizedStringElement.SetAttribute(Constants.ElementId, resource.ElementId);
+                        if (!string.IsNullOrEmpty(resource.StringId))
+                            localizedStringElement.SetAttribute(Constants.StringId, resource.StringId);
+                        if (!string.IsNullOrEmpty(resource.LanguageValue))
+                            localizedStringElement.InnerText = resource.LanguageValue;
+
+                        localizedStringsNode.AppendChild(localizedStringElement);
+                    } 
+                    else if(resource.ResourceType == Constants.LocalizedCollections || resource.ResourceType == Constants.Collection)
+                    {
+                        XmlElement localizedCollectionNode = doc.CreateElement(Constants.LocalizedCollection);
+                        if (!string.IsNullOrEmpty(resource.ElementType))
+                            localizedCollectionNode.SetAttribute(Constants.ElementType, resource.ElementType);
+                        if (!string.IsNullOrEmpty(resource.ElementId))
+                            localizedCollectionNode.SetAttribute(Constants.ElementId, resource.ElementId);
+                        if (!string.IsNullOrEmpty(resource.StringId))
+                            localizedCollectionNode.SetAttribute(Constants.StringId, resource.StringId);
+                        if (!string.IsNullOrEmpty(resource.TargetCollection))
+                            localizedCollectionNode.SetAttribute(Constants.TargetCollection, resource.TargetCollection);
+
+                        var childCollections = resources.Where(x => x.Resource == resource.Resource
+                            && ( x.ResourceType == Constants.LocalizedCollection || x.ResourceType == Constants.CollectionValues )
+                            && x.ElementId == resource.ElementId
+
+                            // Optional -> this might not be set
+                            //&& x.ElementType == resource.ElementType
+                            //&& x.StringId == resource.StringId
+                            //&& x.TargetCollection == resource.TargetCollection
+                        );
+
+                        foreach (var collectionValue in childCollections)
+                        {
+                            if (string.IsNullOrEmpty(collectionValue.LanguageValue))
+                            {
+                                continue;
+                            }
+
+                            XmlElement itemElement = doc.CreateElement(Constants.Item);
+
+                            itemElement.SetAttribute(Constants.Text, collectionValue.LanguageValue);
+
+                            if (!string.IsNullOrEmpty(collectionValue.ItemValue))
+                                itemElement.SetAttribute(Constants.Value, collectionValue.ItemValue);
+
+                            if (collectionValue.SelectByDefault.HasValue)
+                            {
+                                itemElement.SetAttribute(Constants.SelectByDefault, collectionValue.SelectByDefault.Value.ToString());
+                            }
+
+                            localizedCollectionNode.AppendChild(itemElement);
+                        }
+                        localizedCollectionsNode.AppendChild(localizedCollectionNode);
+                    }
                 }
 
                 localizedResourcesNode.AppendChild(localizedStringsNode);
+                localizedResourcesNode.AppendChild(localizedCollectionsNode);
                 rootnode.AppendChild(localizedResourcesNode);
             }
             doc.AppendChild(rootnode);

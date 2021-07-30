@@ -32,6 +32,6 @@
         internal static string Text = "Text";
         internal static string SelectByDefault = "SelectByDefault";
 
-        internal static int LanguageIndex = 7;
+        internal static int LanguageIndex = 8;
     }
 }

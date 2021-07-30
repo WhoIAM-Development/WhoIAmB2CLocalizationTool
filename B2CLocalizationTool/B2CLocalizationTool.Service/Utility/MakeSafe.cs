@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 
 namespace B2CLocalizationTool.Service.Utility
 {
@@ -11,6 +12,17 @@ namespace B2CLocalizationTool.Service.Utility
                 return row[propName].ToString();
             }
             return string.Empty;
+        }
+
+        public static bool? ToSafeNullableBool(this DataRow row, string propName)
+        {
+            if (row.Table.Columns.Contains(propName) && row[propName] != null)
+            {
+                bool result;
+                Boolean.TryParse(row[propName].ToString(), out result);
+                return result;
+            }
+            return null;
         }
     }
 }

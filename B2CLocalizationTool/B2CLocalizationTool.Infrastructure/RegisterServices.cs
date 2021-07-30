@@ -1,6 +1,7 @@
 ﻿using B2CLocalizationTool.Service;
 using B2CLocalizationTool.Service.Abstract;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace B2CLocalizationTool.Infrastructure
 {
@@ -10,6 +11,8 @@ namespace B2CLocalizationTool.Infrastructure
         {
             services.AddScoped<IExternalDataService, ExternalDataService>();
             services.AddScoped<ILocalizationService, LocalizationService>();
+
+            services.AddLogging(configure => configure.AddConsole());
         }
     }
 }

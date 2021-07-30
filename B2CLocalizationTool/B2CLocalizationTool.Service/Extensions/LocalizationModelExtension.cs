@@ -1,5 +1,6 @@
 ﻿using B2CLocalizationTool.Service.Model;
 using B2CLocalizationTool.Service.Utility;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -10,11 +11,16 @@ namespace B2CLocalizationTool.Service.Extensions
 {
     internal static class LocalizationModelExtension
     {
-        
-        internal static IEnumerable<IGrouping<string, LocalizationInputModel>> ToLocalizationModel(this DataSet dataSet)
+        // issuccess defaults to true for now
+        internal static ResultDTO ToResultDTO(this DataSet dataSet)
         {
-            //var errors = new List<string>();
-            //var warnings = new List<string>();
+            var errors = new List<string>();
+            var warnings = new List<string>();
+
+            var resultDTO = new ResultDTO
+            {
+                IsSuccess = true,
+            };
 
             if (dataSet != null && dataSet.Tables != null && dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows != null && dataSet.Tables[0].Rows.Count > 0)
             {
@@ -31,35 +37,74 @@ namespace B2CLocalizationTool.Service.Extensions
                         ElementId = row.ToSafeString(Constants.ElementId),
                         StringId = row.ToSafeString(Constants.StringId),
                         TargetCollection = row.ToSafeString(Constants.TargetCollection),
-                        ItemValue = row.ToSafeString(Constants.ItemValue)
+                        ItemValue = row.ToSafeString(Constants.ItemValue),
+                        SelectByDefault = row.ToSafeNullableBool(Constants.SelectByDefault)
                     };
 
-                    // Validations
 
-                    //if (string.IsNullOrEmpty(tempModel.ResourceType))
-                    //{
-                    //    warnings.Add($"Empty ResourceType found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
-                    //}
+                    // Resource missing -> Serious error -> Should be skipped may be a new group called skipped?
 
-                    //if (tempModel.ResourceType == Constants.LocalizedString && string.IsNullOrEmpty(tempModel.ElementType))
-                    //{
-                    //    warnings.Add($"Empty ElementType found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
-                    //}
+                    if (string.IsNullOrEmpty(row.ToSafeString(Constants.Resource)))
+                    {
+                        errors.Add($"Empty Resource value found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
 
-                    //if (tempModel.ResourceType == Constants.LocalizedString && string.IsNullOrEmpty(tempModel.StringId))
-                    //{
-                    //    warnings.Add($"Empty StringId found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
-                    //}
+                    //Validations
 
-                    //if ((tempModel.ResourceType == Constants.LocalizedCollection || tempModel.ResourceType == Constants.CollectionValues) && string.IsNullOrEmpty(tempModel.ElementId))
-                    //{
-                    //    warnings.Add($"Empty ElementId found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
-                    //}
+                    if (string.IsNullOrEmpty(tempModel.ResourceType))
+                    {
+                        warnings.Add($"Empty ResourceType found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
 
-                    //if ((tempModel.ResourceType == Constants.LocalizedCollection || tempModel.ResourceType == Constants.CollectionValues) && string.IsNullOrEmpty(tempModel.ItemValue))
-                    //{
-                    //    warnings.Add($"Empty ItemValue found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
-                    //}
+                    // Localized strings
+
+                    if (tempModel.ResourceType == Constants.LocalizedString && string.IsNullOrEmpty(tempModel.ElementType))
+                    {
+                        warnings.Add($"Empty ElementType found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    if (tempModel.ResourceType == Constants.LocalizedString && string.IsNullOrEmpty(tempModel.StringId))
+                    {
+                        warnings.Add($"Empty StringId found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    // Localized Collections
+
+                    if (tempModel.ResourceType == Constants.Collection && string.IsNullOrEmpty(tempModel.TargetCollection))
+                    {
+                        warnings.Add($"Empty TargetCollection found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    if (tempModel.ResourceType == Constants.Collection && string.IsNullOrEmpty(tempModel.ElementType))
+                    {
+                        warnings.Add($"Empty ElementType found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    if (tempModel.ResourceType == Constants.Collection && string.IsNullOrEmpty(tempModel.ElementId))
+                    {
+                        warnings.Add($"Empty ElementId found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    if (tempModel.ResourceType == Constants.Collection && string.IsNullOrEmpty(tempModel.ElementType))
+                    {
+                        warnings.Add($"Empty ElementType found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    // Localized Collection
+                    if (tempModel.ResourceType == Constants.CollectionValues && string.IsNullOrEmpty(tempModel.ElementId))
+                    {
+                        warnings.Add($"Empty ElementId found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    if (tempModel.ResourceType == Constants.CollectionValues && string.IsNullOrEmpty(tempModel.ItemValue))
+                    {
+                        warnings.Add($"Empty ItemValue found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
+
+                    if (tempModel.ResourceType == Constants.CollectionValues && string.IsNullOrEmpty(tempModel.TargetCollection))
+                    {
+                        warnings.Add($"Empty TargetCollection found at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(tempModel)}");
+                    }
 
                     for (int i = Constants.LanguageIndex; i < row.ItemArray.Length; i++)
                     {
@@ -76,26 +121,31 @@ namespace B2CLocalizationTool.Service.Extensions
                             SelectByDefault = row.ToSafeNullableBool(Constants.SelectByDefault)
                         };
 
-                        // Validations
+                        //// Resource missing
 
                         //if (string.IsNullOrEmpty(row.ToSafeString(Constants.Resource)))
                         //{
                         //    warnings.Add($"Empty Resource value found for language {row.Table.Columns[i]} at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(model)}");
                         //}
 
-                        //if (string.IsNullOrEmpty(model.LanguageValue) && (model.ResourceType != Constants.Collection && model.ResourceType != Constants.LocalizedCollections))
-                        //{
-                        //    warnings.Add($"Empty language value found for language {row.Table.Columns[i]} at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(model)}");
-                        //}
+                        // Langauge missing - it will be empty for LocalizedCollections
+
+                        if (string.IsNullOrEmpty(model.LanguageValue) && (model.ResourceType != Constants.Collection))
+                        {
+                            warnings.Add($"Empty language value found for language {row.Table.Columns[i]} at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(model)}");
+                        }
 
                         list.Add(model);
                     }
                 }
-                return list.GroupBy(x => x.Resource).ToList();
-            }
-            return null;
-        }
 
+                resultDTO.LocalizationResources = list;
+                resultDTO.Errors = errors;
+                resultDTO.Warnings = warnings;
+            }
+
+            return resultDTO;
+        }
         internal static XmlDocument ToXml(this IEnumerable<IGrouping<string, LocalizationInputModel>> localizationResources)
         {
             XmlDocument doc = new XmlDocument();
@@ -131,8 +181,8 @@ namespace B2CLocalizationTool.Service.Extensions
                             localizedStringElement.InnerText = resource.LanguageValue;
 
                         localizedStringsNode.AppendChild(localizedStringElement);
-                    } 
-                    else if(resource.ResourceType == Constants.LocalizedCollections || resource.ResourceType == Constants.Collection)
+                    }
+                    else if (resource.ResourceType == Constants.Collection)
                     {
                         XmlElement localizedCollectionNode = doc.CreateElement(Constants.LocalizedCollection);
                         if (!string.IsNullOrEmpty(resource.ElementType))
@@ -145,7 +195,7 @@ namespace B2CLocalizationTool.Service.Extensions
                             localizedCollectionNode.SetAttribute(Constants.TargetCollection, resource.TargetCollection);
 
                         var childCollections = resources.Where(x => x.Resource == resource.Resource
-                            && ( x.ResourceType == Constants.LocalizedCollection || x.ResourceType == Constants.CollectionValues )
+                            && (x.ResourceType == Constants.CollectionValues)
                             && x.ElementId == resource.ElementId
                             && x.TargetCollection == resource.TargetCollection
 
@@ -169,7 +219,7 @@ namespace B2CLocalizationTool.Service.Extensions
 
                             if (collectionValue.SelectByDefault.HasValue)
                             {
-                                itemElement.SetAttribute(Constants.SelectByDefault, collectionValue.SelectByDefault.Value.ToString());
+                                itemElement.SetAttribute(Constants.SelectByDefault, collectionValue.SelectByDefault.Value.ToString().ToLower());
                             }
 
                             localizedCollectionNode.AppendChild(itemElement);
@@ -178,9 +228,21 @@ namespace B2CLocalizationTool.Service.Extensions
                     }
                 }
 
-                localizedResourcesNode.AppendChild(localizedStringsNode);
-                localizedResourcesNode.AppendChild(localizedCollectionsNode);
-                rootnode.AppendChild(localizedResourcesNode);
+                // Seems like collections should come before strings
+                if (localizedCollectionsNode.ChildNodes.Count > 0)
+                {
+                    localizedResourcesNode.AppendChild(localizedCollectionsNode);
+                }
+
+                if (localizedStringsNode.ChildNodes.Count > 0)
+                {
+                    localizedResourcesNode.AppendChild(localizedStringsNode);
+                }
+
+                if (localizedResourcesNode.ChildNodes.Count > 0)
+                {
+                    rootnode.AppendChild(localizedResourcesNode);
+                }
             }
             doc.AppendChild(rootnode);
             return doc;
@@ -252,7 +314,7 @@ namespace B2CLocalizationTool.Service.Extensions
                         {
                             if (item.LanguageValues.ContainsKey(lang))
                             {
-                                newLine = $"{newLine},{PreProcess(item.LanguageValues[lang])}";
+                                newLine = $"{newLine},{PreProcess(item.LanguageValues[lang], trim: false)}";
                             }
                             else
                             {
@@ -267,29 +329,23 @@ namespace B2CLocalizationTool.Service.Extensions
             return null;
         }
 
-        private static string PreProcess(string input)
+        private static string PreProcess(string input, bool trim = true)
         {
             if (string.IsNullOrEmpty(input))
                 return string.Empty;
 
-            input = input.Replace('ı', 'i')
-                .Replace('ç', 'c')
-                .Replace('ö', 'o')
-                .Replace('ş', 's')
-                .Replace('ü', 'u')
-                .Replace('ğ', 'g')
-                .Replace('İ', 'I')
-                .Replace('Ç', 'C')
-                .Replace('Ö', 'O')
-                .Replace('Ş', 'S')
-                .Replace('Ü', 'U')
-                .Replace('Ğ', 'G')
-                .Replace("\"", "\"\"")
-                .Trim();
+            input = input.Replace("\"", "\"\"");
+
             if (input.Contains(","))
             {
                 input = "\"" + input + "\"";
             }
+
+            if (trim)
+            {
+                input = input.Trim();
+            }
+
             return input;
         }
 

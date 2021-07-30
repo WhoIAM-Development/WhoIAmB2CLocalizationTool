@@ -9,5 +9,6 @@ namespace B2CLocalizationTool.Service.Model
         public string OutputPath { get; set; }
         public List<string> Errors { get; set; }
         public List<string> Warnings { get; set; }
+        public IEnumerable<LocalizationInputModel> LocalizationResources {get;set;}
     }
 }

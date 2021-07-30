@@ -9,9 +9,11 @@ namespace B2CLocalizationTool.Service.Utility
         internal static string WriteToXMLFile(XmlDocument xml, string inputPath, string outputPath = null)
         {
             string outputFileName = Path.GetFileNameWithoutExtension(inputPath);
+            string absoluteInputPath = Path.GetDirectoryName(inputPath);
+
             if (string.IsNullOrEmpty(outputPath))
             {
-                outputPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                outputPath = absoluteInputPath;
             }
             var completeFileName = $"{outputPath}\\{outputFileName}_{DateTimeOffset.Now.ToUnixTimeSeconds()}.xml";
             xml.Save(completeFileName);

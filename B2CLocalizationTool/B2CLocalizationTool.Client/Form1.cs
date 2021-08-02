@@ -17,8 +17,6 @@ namespace B2CLocalizationTool.Client
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            // Temporaryly added to hide this, since it won't work right now
-            tabControl1.TabPages.Remove(convertToExcelTab);
         }
 
         #region To XML Tab
@@ -98,13 +96,20 @@ namespace B2CLocalizationTool.Client
         private void convertToExcelButton_Click(object sender, EventArgs e)
         {
             //var outputPath = _localizationService.ReadXmlAndWriteToExcel(xmlInputFilePathTextBox.Text, outputFileFormatComboBox.SelectedItem.ToString(), excelOutputFolderPathTextBox.Text);
-            var outputPath = _localizationService.ReadXmlAndWriteToExcel(xmlInputFilePathTextBox.Text, "csv", excelOutputFolderPathTextBox.Text);
+            var result = _localizationService.ReadXmlAndWriteToExcel(xmlInputFilePathTextBox.Text, "csv", excelOutputFolderPathTextBox.Text);
 
-            xmlInputFilePathTextBox.Text = string.Empty;
-            xmlInputChooseFileButton.Text = "Choose file";
-            outputFileFormatComboBox.SelectedItem = null;
+            if (result.IsSuccess)
+            {
+                xmlInputFilePathTextBox.Text = string.Empty;
+                xmlInputChooseFileButton.Text = "Choose file";
+                outputFileFormatComboBox.SelectedItem = null;
 
-            MessageBox.Show($"Excel/CSV Creation completed. File stored to {outputPath}", "Convert to Excel", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Excel/CSV Creation completed. File stored to {result.OutputPath}", "Convert to CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Something went wrong", "Convert to CSV", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void outputFileFormatComboBox_SelectedIndexChanged(object sender, EventArgs e)

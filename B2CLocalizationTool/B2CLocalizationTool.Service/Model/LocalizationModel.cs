@@ -19,9 +19,16 @@ namespace B2CLocalizationTool.Service.Model
     public class LocalizationOutputModel
     {
         public string Resource { get; set; }
+        public string ResourceType { get; set; }
+
         public string ElementType { get; set; }
         public string ElementId { get; set; }
         public string StringId { get; set; }
+
+        public string TargetCollection { get; set; }
+        public string ItemValue { get; set; }
+        public string SelectByDefault { get; set; }
+
         public Dictionary<string, string> LanguageValues { get; set; }
     }
 }

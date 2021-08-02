@@ -259,7 +259,7 @@ namespace B2CLocalizationTool.Service.Extensions
                 {
                     var localizationModels = new List<LocalizationOutputModel>();
                     List<string> langauges = new List<string> { };
-                    foreach (XmlNode xnode in lnode.ChildNodes)
+                    foreach (XmlNode xnode in lnode.SelectNodes(Constants.LocalizedResources))
                     {
                         var resourceId = xnode.Attributes[Constants.Id].Value;
                         var splitArray = resourceId.Split(".");
@@ -272,34 +272,103 @@ namespace B2CLocalizationTool.Service.Extensions
 
                         var resourceIdWithoutLanguage = string.Join(".", splitArray.SkipLast(1));
 
-                        var localizedStrings = xnode.SelectSingleNode(Constants.LocalizedStrings);
+                        var localziedCollections = xnode.SelectSingleNode(Constants.LocalizedCollections);
 
-                        foreach (XmlNode lsNode in localizedStrings.ChildNodes)
+                        if(localziedCollections != null)
                         {
-                            var existingLocalization = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
-                                && x.ElementType == lsNode.Attributes[Constants.ElementType]?.Value
-                                && x.ElementId == lsNode.Attributes[Constants.ElementId]?.Value
-                                && x.StringId == lsNode.Attributes[Constants.StringId]?.Value);
-                            if (existingLocalization != null)
+                            foreach (XmlNode lcNode in localziedCollections.ChildNodes)
                             {
-                                existingLocalization.LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText, existingLocalization.LanguageValues);
-                            }
-                            else
-                            {
-                                localizationModels.Add(new LocalizationOutputModel()
+                                var existingCollection = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
+                                    && x.ResourceType == Constants.Collection
+                                    && x.ElementType == lcNode.Attributes[Constants.ElementType]?.Value
+                                    && x.ElementId == lcNode.Attributes[Constants.ElementId]?.Value
+                                    && x.TargetCollection == lcNode.Attributes[Constants.TargetCollection]?.Value);
+
+                                // if it already exists -> no need to add again
+
+                                if (existingCollection == null)
                                 {
-                                    Resource = resourceIdWithoutLanguage,
-                                    ElementType = lsNode.Attributes[Constants.ElementType]?.Value,
-                                    ElementId = lsNode.Attributes[Constants.ElementId]?.Value,
-                                    StringId = lsNode.Attributes[Constants.StringId]?.Value,
-                                    LanguageValues = AddToLanguageValues(resourceLanguage, lsNode?.InnerText)
-                                });
+                                    localizationModels.Add(new LocalizationOutputModel()
+                                    {
+                                        Resource = resourceIdWithoutLanguage,
+                                        ResourceType = Constants.Collection,
+                                        ElementType = lcNode.Attributes[Constants.ElementType]?.Value,
+                                        ElementId = lcNode.Attributes[Constants.ElementId]?.Value,
+                                        TargetCollection = lcNode.Attributes[Constants.TargetCollection]?.Value,
+                                    });
+                                }
+
+                                // Map collectionValues 
+                                foreach (XmlElement itemElement in lcNode.ChildNodes)
+                                {
+                                    var exisistingCollectionValue = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
+                                        && x.ResourceType == Constants.CollectionValues
+                                        && x.ElementId == lcNode.Attributes[Constants.ElementId]?.Value
+                                        && x.TargetCollection == lcNode.Attributes[Constants.TargetCollection]?.Value
+                                        && x.ItemValue == itemElement.Attributes[Constants.Value]?.Value);
+
+                                    if(exisistingCollectionValue == null)
+                                    {
+                                        localizationModels.Add(new LocalizationOutputModel()
+                                        {
+                                            Resource = resourceIdWithoutLanguage,
+                                            ResourceType = Constants.CollectionValues,
+                                            ElementId = lcNode.Attributes[Constants.ElementId]?.Value,
+                                            TargetCollection = lcNode.Attributes[Constants.TargetCollection]?.Value,
+                                            ItemValue = itemElement.Attributes[Constants.Value]?.Value,
+                                            SelectByDefault = itemElement.Attributes[Constants.SelectByDefault]?.Value,
+                                            LanguageValues = AddToLanguageValues(resourceLanguage, itemElement.Attributes[Constants.Text]?.Value),
+                                        });
+                                    }
+                                    else
+                                    {
+                                        exisistingCollectionValue.LanguageValues = AddToLanguageValues(resourceLanguage, itemElement.Attributes[Constants.Text]?.Value, exisistingCollectionValue.LanguageValues);
+                                    }
+                                }
+                            }
+                        }
+
+                        var localizedStrings = xnode.SelectSingleNode(Constants.LocalizedStrings);
+                        if (localizedStrings != null)
+                        {
+                            foreach (XmlNode lsNode in localizedStrings.ChildNodes)
+                            {
+                                var existingLocalization = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
+                                    && x.ResourceType == Constants.LocalizedString
+                                    && x.ElementType == lsNode.Attributes[Constants.ElementType]?.Value
+                                    && x.ElementId == lsNode.Attributes[Constants.ElementId]?.Value
+                                    && x.StringId == lsNode.Attributes[Constants.StringId]?.Value);
+                                if (existingLocalization == null)
+                                {
+                                    localizationModels.Add(new LocalizationOutputModel()
+                                    {
+                                        Resource = resourceIdWithoutLanguage,
+                                        ResourceType = Constants.LocalizedString,
+                                        ElementType = lsNode.Attributes[Constants.ElementType]?.Value,
+                                        ElementId = lsNode.Attributes[Constants.ElementId]?.Value,
+                                        StringId = lsNode.Attributes[Constants.StringId]?.Value,
+                                        LanguageValues = AddToLanguageValues(resourceLanguage, lsNode?.InnerText)
+                                    });
+                                }
+                                else
+                                {
+                                    existingLocalization.LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText, existingLocalization.LanguageValues);
+                                }
                             }
                         }
                     }
 
                     var csv = new StringBuilder();
-                    var headerLine = $"{PreProcess(Constants.Resource)},{PreProcess(Constants.ElementType)},{PreProcess(Constants.ElementId)},{PreProcess(Constants.StringId)}";
+                    var headerLine = 
+                        $"{PreProcess(Constants.Resource)}," +
+                        $"{PreProcess(Constants.ResourceType)}," +
+                        $"{PreProcess(Constants.ElementType)}," +
+                        $"{PreProcess(Constants.ElementId)}," +
+                        $"{PreProcess(Constants.StringId)}," +
+                        $"{PreProcess(Constants.TargetCollection)}," +
+                        $"{PreProcess(Constants.ItemValue)}," +
+                        $"{PreProcess(Constants.SelectByDefault)}";
+
                     foreach (var lang in langauges)
                     {
                         headerLine = $"{headerLine},{PreProcess(lang)}";
@@ -308,11 +377,19 @@ namespace B2CLocalizationTool.Service.Extensions
 
                     foreach (var item in localizationModels)
                     {
-                        var newLine = $"{PreProcess(item.Resource)},{PreProcess(item.ElementType)},{PreProcess(item.ElementId)},{PreProcess(item.StringId)}";
+                        var newLine = 
+                            $"{PreProcess(item.Resource)}," +
+                            $"{PreProcess(item.ResourceType)}," +
+                            $"{PreProcess(item.ElementType)}," +
+                            $"{PreProcess(item.ElementId)}," +
+                            $"{PreProcess(item.StringId)}," +
+                            $"{PreProcess(item.TargetCollection)}," +
+                            $"{PreProcess(item.ItemValue)}," +
+                            $"{PreProcess(item.SelectByDefault)}";
 
                         foreach (var lang in langauges)
                         {
-                            if (item.LanguageValues.ContainsKey(lang))
+                            if ( item.LanguageValues != null && item.LanguageValues.ContainsKey(lang))
                             {
                                 newLine = $"{newLine},{PreProcess(item.LanguageValues[lang], trim: false)}";
                             }

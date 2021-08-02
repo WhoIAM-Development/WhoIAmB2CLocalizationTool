@@ -57,10 +57,25 @@ namespace B2CLocalizationTool.Service
             }
         }
 
-        public string ReadXmlAndWriteToExcel(string inputPath, string fileFormat, string outputPath = null)
+        public IResultDTO ReadXmlAndWriteToExcel(string inputPath, string fileFormat, string outputPath = null)
         {
-            var document = _externalDataService.ReadXml(inputPath);
-            return _externalDataService.WriteToExcelOrCSV(document, inputPath, fileFormat, outputPath);
+            try
+            {
+                var document = _externalDataService.ReadXml(inputPath);
+                outputPath = _externalDataService.WriteToExcelOrCSV(document, inputPath, fileFormat, outputPath);
+                return new ResultDTO
+                {
+                    IsSuccess = true,
+                    OutputPath = outputPath
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultDTO()
+                {
+                    IsSuccess = false
+                };
+            }
         }
     }
 }

@@ -34,10 +34,13 @@ namespace B2CLocalizationTool.Service.Utility
         internal static string WriteCSVFile(string input, string inputPath, string outputPath = null)
         {
             var outputFileName = Path.GetFileNameWithoutExtension(inputPath);
+            string absoluteInputPath = Path.GetDirectoryName(inputPath);
+
             if (string.IsNullOrEmpty(outputPath))
             {
-                outputPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                outputPath = absoluteInputPath;
             }
+
             var completeFileName = $"{outputPath}\\{outputFileName}{DateTimeOffset.Now.ToUnixTimeSeconds()}.csv";
 
             File.WriteAllText(completeFileName, input, Encoding.UTF8);

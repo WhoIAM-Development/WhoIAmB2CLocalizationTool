@@ -1,8 +1,9 @@
 # Introduction 
-This tool is to help in converting localization data of AD B2C from Excel/CSV to Xml
+This tool is to help in converting localization data of AD B2C from Excel/CSV to Xml and Xml to CSV
 
 # Getting Started
-The first part is currently implemented, ie, Excel/CSV to Xml file.  
+1.Conversion of Excel/CSV to Xml file.  
+2.Conversion of Xml to CSV file.  
 
 # Build and Test  
 The sample input excel (updated) is pushed along with the repo, please follow the same column names and format.  
@@ -19,3 +20,6 @@ Also, Do feel free to add more language columns to the end.
 3. The LocalizedCollection elements can be represented as follow up column with same resourceId, ElementId, TargetCollection and ResourceType as **CollectionValues**
     This row specifies **LocalizedCollection:Item** node in xml. This row does not have to be immediately after the parent collection row.  
     The columns ElementType and StringId can be left empty.  
+
+### Conversion of Xml to CSV 
+1. The xml file should have Localization node as root element. 

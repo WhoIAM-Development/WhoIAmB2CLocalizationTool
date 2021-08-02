@@ -1,4 +1,5 @@
 ﻿using B2CLocalizationTool.Service.Model;
+using B2CLocalizationTool.Service.Model.ToJSON;
 using B2CLocalizationTool.Service.Utility;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -258,16 +259,16 @@ namespace B2CLocalizationTool.Service.Extensions
                 if (lnode != null && lnode.ChildNodes.Count > 0)
                 {
                     var localizationModels = new List<LocalizationOutputModel>();
-                    List<string> langauges = new List<string> { };
+                    List<string> languages = new List<string> { };
                     foreach (XmlNode xnode in lnode.SelectNodes(Constants.LocalizedResources))
                     {
                         var resourceId = xnode.Attributes[Constants.Id].Value;
                         var splitArray = resourceId.Split(".");
                         var resourceLanguage = splitArray.Last();
 
-                        if (!langauges.Contains(resourceLanguage))
+                        if (!languages.Contains(resourceLanguage))
                         {
-                            langauges.Add(resourceLanguage);
+                            languages.Add(resourceLanguage);
                         }
 
                         var resourceIdWithoutLanguage = string.Join(".", splitArray.SkipLast(1));
@@ -358,52 +359,91 @@ namespace B2CLocalizationTool.Service.Extensions
                         }
                     }
 
-                    var csv = new StringBuilder();
-                    var headerLine = 
-                        $"{PreProcess(Constants.Resource)}," +
-                        $"{PreProcess(Constants.ResourceType)}," +
-                        $"{PreProcess(Constants.ElementType)}," +
-                        $"{PreProcess(Constants.ElementId)}," +
-                        $"{PreProcess(Constants.StringId)}," +
-                        $"{PreProcess(Constants.TargetCollection)}," +
-                        $"{PreProcess(Constants.ItemValue)}," +
-                        $"{PreProcess(Constants.SelectByDefault)}";
-
-                    foreach (var lang in langauges)
-                    {
-                        headerLine = $"{headerLine},{PreProcess(lang)}";
-                    }
-                    csv.AppendLine(headerLine);
-
-                    foreach (var item in localizationModels)
-                    {
-                        var newLine = 
-                            $"{PreProcess(item.Resource)}," +
-                            $"{PreProcess(item.ResourceType)}," +
-                            $"{PreProcess(item.ElementType)}," +
-                            $"{PreProcess(item.ElementId)}," +
-                            $"{PreProcess(item.StringId)}," +
-                            $"{PreProcess(item.TargetCollection)}," +
-                            $"{PreProcess(item.ItemValue)}," +
-                            $"{PreProcess(item.SelectByDefault)}";
-
-                        foreach (var lang in langauges)
-                        {
-                            if ( item.LanguageValues != null && item.LanguageValues.ContainsKey(lang))
-                            {
-                                newLine = $"{newLine},{PreProcess(item.LanguageValues[lang], trim: false)}";
-                            }
-                            else
-                            {
-                                newLine = $"{newLine},{string.Empty}";
-                            }
-                        }
-                        csv.AppendLine(newLine);
-                    }
-                    return csv.ToString();
+                    return MapLocalizationModelsToCSVString(localizationModels, languages);
                 }
             }
             return null;
+        }
+
+        internal static string MapLocalizedJSONToCSVString(this List<LocalizedJson> localizedJsons, List<string> languages)
+        {
+            List<LocalizationOutputModel> localizationModels = new List<LocalizationOutputModel>();
+            foreach (var localizedJson in localizedJsons)
+            {
+                foreach (var localizedString in localizedJson.LocalizedStrings)
+                {
+                    var existingLocalization = localizationModels.FirstOrDefault(x => x.Resource == localizedJson.Resource
+                               //&& x.ResourceType == Constants.LocalizedString
+                               && x.ElementType == localizedString.ElementType
+                               && x.ElementId == localizedString.ElementId
+                               && x.StringId == localizedString.StringId);
+
+                    if (existingLocalization == null)
+                    {
+                        localizationModels.Add(new LocalizationOutputModel()
+                        {
+                            Resource = localizedJson.Resource,
+                            ResourceType = Constants.LocalizedString,
+                            ElementType = localizedString.ElementType,
+                            ElementId = localizedString.ElementId,
+                            StringId = localizedString.StringId,
+                            LanguageValues = AddToLanguageValues(localizedJson.LangaugeCode, localizedString.Value)
+                        });
+                    }
+                    else
+                    {
+                        existingLocalization.LanguageValues = AddToLanguageValues(localizedJson.LangaugeCode, localizedString.Value, existingLocalization.LanguageValues);
+                    }
+                }
+            }
+            return MapLocalizationModelsToCSVString(localizationModels, languages);
+        }
+
+        internal static string MapLocalizationModelsToCSVString(List<LocalizationOutputModel> localizationModels, List<string> langauges)
+        {
+            var csv = new StringBuilder();
+            var headerLine =
+                $"{PreProcess(Constants.Resource)}," +
+                $"{PreProcess(Constants.ResourceType)}," +
+                $"{PreProcess(Constants.ElementType)}," +
+                $"{PreProcess(Constants.ElementId)}," +
+                $"{PreProcess(Constants.StringId)}," +
+                $"{PreProcess(Constants.TargetCollection)}," +
+                $"{PreProcess(Constants.ItemValue)}," +
+                $"{PreProcess(Constants.SelectByDefault)}";
+
+            foreach (var lang in langauges)
+            {
+                headerLine = $"{headerLine},{PreProcess(lang)}";
+            }
+            csv.AppendLine(headerLine);
+
+            foreach (var item in localizationModels)
+            {
+                var newLine =
+                    $"{PreProcess(item.Resource)}," +
+                    $"{PreProcess(item.ResourceType)}," +
+                    $"{PreProcess(item.ElementType)}," +
+                    $"{PreProcess(item.ElementId)}," +
+                    $"{PreProcess(item.StringId)}," +
+                    $"{PreProcess(item.TargetCollection)}," +
+                    $"{PreProcess(item.ItemValue)}," +
+                    $"{PreProcess(item.SelectByDefault)}";
+
+                foreach (var lang in langauges)
+                {
+                    if (item.LanguageValues != null && item.LanguageValues.ContainsKey(lang))
+                    {
+                        newLine = $"{newLine},{PreProcess(item.LanguageValues[lang], trim: false)}";
+                    }
+                    else
+                    {
+                        newLine = $"{newLine},{string.Empty}";
+                    }
+                }
+                csv.AppendLine(newLine);
+            }
+            return csv.ToString();
         }
 
         private static string PreProcess(string input, bool trim = true)

@@ -33,6 +33,7 @@ namespace B2CLocalizationTool.Client
             services.AddScoped<BaseForm>();
 
             var toJsonOptions = Configuration.GetSection("ToJson");
+            //var toJsonOptions = Configuration.GetSection("ToJsonWithoutSeperateColumns");
             services.Configure<ToJsonSettings>(toJsonOptions);
 
             using (ServiceProvider serviceProvider = services.BuildServiceProvider())

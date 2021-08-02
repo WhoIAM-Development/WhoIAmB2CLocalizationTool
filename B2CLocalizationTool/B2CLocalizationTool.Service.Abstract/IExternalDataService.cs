@@ -9,5 +9,6 @@ namespace B2CLocalizationTool.Service.Abstract
         string WriteXmlToFile(XmlDocument document, string inputPath = null, string outputPath = null);
         XmlDocument ReadXml(string fileName);
         string WriteToExcelOrCSV(XmlDocument input,  string inputPath, string fileFormat, string outputPath = null);
+        string WriteStringToCSV(string csvString, string inputPath, string outputPath = null);
     }
 }

@@ -2,6 +2,7 @@
 using B2CLocalizationTool.Shared;
 using Microsoft.Extensions.Options;
 using System;
+using System.Text;
 using System.Windows.Forms;
 
 namespace B2CLocalizationTool.Client
@@ -198,5 +199,62 @@ namespace B2CLocalizationTool.Client
             }
         }
         #endregion
+
+        private void jsonToCSV_btnChooseFiles_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog open = new OpenFileDialog();
+            open.Filter = "JSON *.json | *.JSON";
+            open.Multiselect = true;
+            open.Title = "Open JSON Files";
+
+            if (open.ShowDialog() == DialogResult.OK)
+            {
+                StringBuilder inputFiles = new StringBuilder();
+                foreach (String file in open.FileNames)
+                {
+                    inputFiles.AppendLine(file);
+                }
+                jsonToCSV_textInputFiles.Text = inputFiles.ToString();
+            }
+        }
+
+        private void jsonToCSV_textInputFiles_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(jsonToCSV_textInputFiles.Text))
+            {
+                jsonToCSV_btnConvert.Enabled = true;
+            }
+            else
+            {
+                jsonToCSV_btnConvert.Enabled = false;
+            }
+        }
+
+        private void jsonToCSV_btnChooseOutputFolder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderDlg = new FolderBrowserDialog();
+            folderDlg.ShowNewFolderButton = true;
+            DialogResult result = folderDlg.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                jsonToCSV_textOutputFolder.Text = folderDlg.SelectedPath;
+            }
+        }
+
+        private void jsonToCSV_btnConvert_Click(object sender, EventArgs e)
+        {
+            IResultDTO result = _localizationService.ReadJsonFilesAndWriteToExcel(jsonToCSV_textInputFiles.Text, jsonToCSV_textOutputFolder.Text);
+
+            if (result.IsSuccess)
+            {
+                jsonToCSV_textInputFiles.Text = string.Empty;
+
+                MessageBox.Show($"Converted selected files CSV and is stored at {result.OutputPath}", "Convert JSON to CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Something went wrong", "Convert JSON to CSV", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }

@@ -103,7 +103,8 @@ namespace B2CLocalizationTool.Service.Extensions
 
                         var model = new LocalizedStringModel
                         {
-                            Resource = $"{row.ToSafeString(Constants.Resource)}.{row.Table.Columns[item.ModifiedValueIndex]}",
+                            Resource = $"{row.ToSafeString(Constants.Resource)}_{row.Table.Columns[item.ModifiedValueIndex]}", // seperator is "_" instead of "."
+                            LangaugeCode = row.Table.Columns[item.ModifiedValueIndex].ToString(),
                             ElementType = tempModel.ElementType,
                             ElementId = tempModel.ElementId,
                             StringId = tempModel.StringId,

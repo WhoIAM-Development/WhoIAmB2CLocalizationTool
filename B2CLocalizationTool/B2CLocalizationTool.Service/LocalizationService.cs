@@ -7,19 +7,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace B2CLocalizationTool.Service
 {
-    public class LocalizationService: ILocalizationService
+    public class LocalizationService : ILocalizationService
     {
         private readonly IExternalDataService _externalDataService;
         private readonly ILogger<LocalizationService> _logger;
 
         private readonly ToJsonSettings _toJsonOptions;
 
-        public LocalizationService(IExternalDataService externalDataService, 
+        public LocalizationService(IExternalDataService externalDataService,
             ILogger<LocalizationService> logger,
             IOptions<ToJsonSettings> toJsonOptions)
         {
@@ -93,6 +95,7 @@ namespace B2CLocalizationTool.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return new ResultDTO()
                 {
                     IsSuccess = false
@@ -139,6 +142,77 @@ namespace B2CLocalizationTool.Service
             }
         }
 
+        public IResultDTO ReadJsonFilesAndWriteToExcel(string inputFiles, string outputPath = null)
+        {
+            try
+            {
+                var localizedJsonList = new List<LocalizedJson>();
+                string[] fileNames = inputFiles.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+
+                var languages = new List<string>();
+
+
+                foreach (var fileName in fileNames)
+                {
+                    var fileNameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
+                    var splitName = fileNameWithoutExtension.Split("_");
+
+                    if(splitName.Length < 2)
+                    {
+                        continue;
+                    }
+
+                    var resource = splitName[splitName.Length - 2];
+                    var languageCode = splitName[splitName.Length - 1];
+                    languageCode = languageCode.Trim();
+                    var match = Regex.Match(languageCode, "^[a-z]{2}(-[A-Z]{2})?$");
+
+                    if (!match.Success)
+                    {
+                        continue;
+                    }
+
+                    if (!languages.Contains(languageCode))
+                    {
+                        languages.Add(languageCode);
+                    }
+
+                    using (System.IO.StreamReader file = System.IO.File.OpenText(fileName))
+                    {
+                        using (JsonTextReader reader = new JsonTextReader(file))
+                        {
+                            var model = new JsonSerializer().Deserialize<LocalizedJson>(reader);
+                            model.Resource = resource;
+                            model.LangaugeCode = languageCode;
+                            localizedJsonList.Add(model);
+                        }
+                    }
+                }
+
+                if(languages.Count == 0)
+                {
+                    throw new Exception("No langauges could be found");
+                }
+
+                var csvString = localizedJsonList.MapLocalizedJSONToCSVString(languages);
+
+                outputPath = _externalDataService.WriteStringToCSV(csvString, fileNames.First(), outputPath);
+                return new ResultDTO
+                {
+                    IsSuccess = true,
+                    OutputPath = outputPath
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return new ResultDTO()
+                {
+                    IsSuccess = false
+                };
+            }
+        }
+
         public IResultDTO ReadXmlAndWriteToExcel(string inputPath, string fileFormat, string outputPath = null)
         {
             try
@@ -153,11 +227,13 @@ namespace B2CLocalizationTool.Service
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 return new ResultDTO()
                 {
                     IsSuccess = false
                 };
             }
         }
+
     }
 }

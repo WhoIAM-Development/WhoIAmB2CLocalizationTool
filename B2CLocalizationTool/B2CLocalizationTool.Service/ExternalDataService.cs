@@ -44,6 +44,11 @@ namespace B2CLocalizationTool.Service
             return null;
         }
 
+        public string WriteStringToCSV(string csvString, string inputPath, string outputPath = null)
+        {
+            return ExcelCsvUtility.WriteCSVFile(csvString, inputPath, outputPath);
+        }
+
         public XmlDocument ReadXml(string fileName)
         {
             return XMLUtility.ReadXMLFile(fileName);

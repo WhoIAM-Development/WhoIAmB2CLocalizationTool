@@ -58,10 +58,19 @@ namespace B2CLocalizationTool.Client
             this.toJson_btnConvert = new System.Windows.Forms.Button();
             this.toJson_btnChooseInput = new System.Windows.Forms.Button();
             this.toJson_textInputPath = new System.Windows.Forms.TextBox();
+            this.tabPageJsonToCSV = new System.Windows.Forms.TabPage();
+            this.jsonToCSV_btnChooseOutputFolder = new System.Windows.Forms.Button();
+            this.jsonToCSV_labelOuputFolder = new System.Windows.Forms.Label();
+            this.jsonToCSV_textOutputFolder = new System.Windows.Forms.TextBox();
+            this.jsonToCSV_labelInputFiles = new System.Windows.Forms.Label();
+            this.jsonToCSV_btnConvert = new System.Windows.Forms.Button();
+            this.jsonToCSV_btnChooseFiles = new System.Windows.Forms.Button();
+            this.jsonToCSV_textInputFiles = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.convertToXMLTab.SuspendLayout();
             this.convertToExcelTab.SuspendLayout();
             this.tabPageToJson.SuspendLayout();
+            this.tabPageJsonToCSV.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -69,6 +78,7 @@ namespace B2CLocalizationTool.Client
             this.tabControl1.Controls.Add(this.convertToXMLTab);
             this.tabControl1.Controls.Add(this.convertToExcelTab);
             this.tabControl1.Controls.Add(this.tabPageToJson);
+            this.tabControl1.Controls.Add(this.tabPageJsonToCSV);
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -173,7 +183,7 @@ namespace B2CLocalizationTool.Client
             this.convertToExcelTab.Name = "convertToExcelTab";
             this.convertToExcelTab.Size = new System.Drawing.Size(793, 424);
             this.convertToExcelTab.TabIndex = 1;
-            this.convertToExcelTab.Text = "To Excel";
+            this.convertToExcelTab.Text = "XML To CSV";
             this.convertToExcelTab.UseVisualStyleBackColor = true;
             // 
             // label3
@@ -365,6 +375,90 @@ namespace B2CLocalizationTool.Client
             this.toJson_textInputPath.TabIndex = 10;
             this.toJson_textInputPath.TextChanged += new System.EventHandler(this.toJson_textInputPath_TextChanged);
             // 
+            // tabPageJsonToCSV
+            // 
+            this.tabPageJsonToCSV.Controls.Add(this.jsonToCSV_btnChooseOutputFolder);
+            this.tabPageJsonToCSV.Controls.Add(this.jsonToCSV_labelOuputFolder);
+            this.tabPageJsonToCSV.Controls.Add(this.jsonToCSV_textOutputFolder);
+            this.tabPageJsonToCSV.Controls.Add(this.jsonToCSV_labelInputFiles);
+            this.tabPageJsonToCSV.Controls.Add(this.jsonToCSV_btnConvert);
+            this.tabPageJsonToCSV.Controls.Add(this.jsonToCSV_btnChooseFiles);
+            this.tabPageJsonToCSV.Controls.Add(this.jsonToCSV_textInputFiles);
+            this.tabPageJsonToCSV.Location = new System.Drawing.Point(4, 24);
+            this.tabPageJsonToCSV.Name = "tabPageJsonToCSV";
+            this.tabPageJsonToCSV.Size = new System.Drawing.Size(793, 424);
+            this.tabPageJsonToCSV.TabIndex = 3;
+            this.tabPageJsonToCSV.Text = "JSON to CSV";
+            this.tabPageJsonToCSV.UseVisualStyleBackColor = true;
+            // 
+            // jsonToCSV_btnChooseOutputFolder
+            // 
+            this.jsonToCSV_btnChooseOutputFolder.Location = new System.Drawing.Point(610, 305);
+            this.jsonToCSV_btnChooseOutputFolder.Name = "jsonToCSV_btnChooseOutputFolder";
+            this.jsonToCSV_btnChooseOutputFolder.Size = new System.Drawing.Size(158, 23);
+            this.jsonToCSV_btnChooseOutputFolder.TabIndex = 25;
+            this.jsonToCSV_btnChooseOutputFolder.Text = "Choose output folder";
+            this.jsonToCSV_btnChooseOutputFolder.UseVisualStyleBackColor = true;
+            this.jsonToCSV_btnChooseOutputFolder.Click += new System.EventHandler(this.jsonToCSV_btnChooseOutputFolder_Click);
+            // 
+            // jsonToCSV_labelOuputFolder
+            // 
+            this.jsonToCSV_labelOuputFolder.AutoSize = true;
+            this.jsonToCSV_labelOuputFolder.Location = new System.Drawing.Point(8, 287);
+            this.jsonToCSV_labelOuputFolder.Name = "jsonToCSV_labelOuputFolder";
+            this.jsonToCSV_labelOuputFolder.Size = new System.Drawing.Size(157, 15);
+            this.jsonToCSV_labelOuputFolder.TabIndex = 24;
+            this.jsonToCSV_labelOuputFolder.Text = "Ouput folder path (optional)";
+            // 
+            // jsonToCSV_textOutputFolder
+            // 
+            this.jsonToCSV_textOutputFolder.Enabled = false;
+            this.jsonToCSV_textOutputFolder.Location = new System.Drawing.Point(8, 305);
+            this.jsonToCSV_textOutputFolder.Name = "jsonToCSV_textOutputFolder";
+            this.jsonToCSV_textOutputFolder.Size = new System.Drawing.Size(575, 23);
+            this.jsonToCSV_textOutputFolder.TabIndex = 23;
+            // 
+            // jsonToCSV_labelInputFiles
+            // 
+            this.jsonToCSV_labelInputFiles.AutoSize = true;
+            this.jsonToCSV_labelInputFiles.Location = new System.Drawing.Point(8, 24);
+            this.jsonToCSV_labelInputFiles.Name = "jsonToCSV_labelInputFiles";
+            this.jsonToCSV_labelInputFiles.Size = new System.Drawing.Size(152, 15);
+            this.jsonToCSV_labelInputFiles.TabIndex = 22;
+            this.jsonToCSV_labelInputFiles.Text = "Input files selected (JSON) *";
+            // 
+            // jsonToCSV_btnConvert
+            // 
+            this.jsonToCSV_btnConvert.Enabled = false;
+            this.jsonToCSV_btnConvert.Location = new System.Drawing.Point(320, 375);
+            this.jsonToCSV_btnConvert.Name = "jsonToCSV_btnConvert";
+            this.jsonToCSV_btnConvert.Size = new System.Drawing.Size(158, 23);
+            this.jsonToCSV_btnConvert.TabIndex = 21;
+            this.jsonToCSV_btnConvert.Text = "Convert to CSV";
+            this.jsonToCSV_btnConvert.UseVisualStyleBackColor = true;
+            this.jsonToCSV_btnConvert.Click += new System.EventHandler(this.jsonToCSV_btnConvert_Click);
+            // 
+            // jsonToCSV_btnChooseFiles
+            // 
+            this.jsonToCSV_btnChooseFiles.Location = new System.Drawing.Point(610, 42);
+            this.jsonToCSV_btnChooseFiles.Name = "jsonToCSV_btnChooseFiles";
+            this.jsonToCSV_btnChooseFiles.Size = new System.Drawing.Size(158, 23);
+            this.jsonToCSV_btnChooseFiles.TabIndex = 20;
+            this.jsonToCSV_btnChooseFiles.Text = "Choose file(s)";
+            this.jsonToCSV_btnChooseFiles.UseVisualStyleBackColor = true;
+            this.jsonToCSV_btnChooseFiles.Click += new System.EventHandler(this.jsonToCSV_btnChooseFiles_Click);
+            // 
+            // jsonToCSV_textInputFiles
+            // 
+            this.jsonToCSV_textInputFiles.Location = new System.Drawing.Point(8, 42);
+            this.jsonToCSV_textInputFiles.Multiline = true;
+            this.jsonToCSV_textInputFiles.Name = "jsonToCSV_textInputFiles";
+            this.jsonToCSV_textInputFiles.ReadOnly = true;
+            this.jsonToCSV_textInputFiles.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.jsonToCSV_textInputFiles.Size = new System.Drawing.Size(575, 229);
+            this.jsonToCSV_textInputFiles.TabIndex = 19;
+            this.jsonToCSV_textInputFiles.TextChanged += new System.EventHandler(this.jsonToCSV_textInputFiles_TextChanged);
+            // 
             // BaseForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -380,6 +474,8 @@ namespace B2CLocalizationTool.Client
             this.convertToExcelTab.PerformLayout();
             this.tabPageToJson.ResumeLayout(false);
             this.tabPageToJson.PerformLayout();
+            this.tabPageJsonToCSV.ResumeLayout(false);
+            this.tabPageJsonToCSV.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -415,6 +511,14 @@ namespace B2CLocalizationTool.Client
         private System.Windows.Forms.TextBox toJson_textInputPath;
         private System.Windows.Forms.Label toJson_labelPrefix;
         private System.Windows.Forms.TextBox toJson_textFilePrefix;
+        private System.Windows.Forms.TabPage tabPageJsonToCSV;
+        private System.Windows.Forms.Button jsonToCSV_btnChooseOutputFolder;
+        private System.Windows.Forms.Label jsonToCSV_labelOuputFolder;
+        private System.Windows.Forms.TextBox jsonToCSV_textOutputFolder;
+        private System.Windows.Forms.Label jsonToCSV_labelInputFiles;
+        private System.Windows.Forms.Button jsonToCSV_btnConvert;
+        private System.Windows.Forms.Button jsonToCSV_btnChooseFiles;
+        private System.Windows.Forms.TextBox jsonToCSV_textInputFiles;
     }
 }
 

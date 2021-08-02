@@ -6,7 +6,7 @@ Currenty there are 4 different parts to this tool
 1. Conversion of Excel/CSV file to Xml file.  
 2. Conversion of Xml file to CSV file.  
 3. Conversion of Excel/CSV to JSON files.  
-4. Conversion of JSON files to CSV file.  **(Not implemented)**  
+4. Conversion of JSON files to CSV file.  
 
 # Common 
 

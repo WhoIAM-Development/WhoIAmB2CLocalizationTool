@@ -3,19 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31424.327
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Client", "B2CLocalizationTool.Client\B2CLocalizationTool.Client.csproj", "{491F3718-9405-4490-A39A-80E09BFD51E7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2CLocalizationTool.Client", "B2CLocalizationTool.Client\B2CLocalizationTool.Client.csproj", "{491F3718-9405-4490-A39A-80E09BFD51E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Service", "B2CLocalizationTool.Service\B2CLocalizationTool.Service.csproj", "{B3F8498E-B936-495C-9B95-D2AFC600749A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2CLocalizationTool.Service", "B2CLocalizationTool.Service\B2CLocalizationTool.Service.csproj", "{B3F8498E-B936-495C-9B95-D2AFC600749A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Service.Abstract", "B2CLocalizationTool.Service.Abstract\B2CLocalizationTool.Service.Abstract.csproj", "{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2CLocalizationTool.Service.Abstract", "B2CLocalizationTool.Service.Abstract\B2CLocalizationTool.Service.Abstract.csproj", "{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2CLocalizationTool.Infrastructure", "B2CLocalizationTool.Infrastructure\B2CLocalizationTool.Infrastructure.csproj", "{69D17071-68FE-4D86-ACF9-CB3374D31FD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2CLocalizationTool.Infrastructure", "B2CLocalizationTool.Infrastructure\B2CLocalizationTool.Infrastructure.csproj", "{69D17071-68FE-4D86-ACF9-CB3374D31FD4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "01 - Client", "01 - Client", "{4D0023C1-C0F7-42B6-85C9-B91F93E58BBF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "02 - Infrastructure", "02 - Infrastructure", "{DC0F6095-0012-46CE-A74E-F547A046F851}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "03 - Service", "03 - Service", "{FC529935-BEBA-416D-8310-FC6C32004928}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2CLocalizationTool.Shared", "B2CLocalizationTool.Shared\B2CLocalizationTool.Shared.csproj", "{AE649693-FBFE-41B2-9772-44154A85DBB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00 - Files", "00 - Files", "{78F0C5E0-1DBA-431D-87F6-A3DA6751C339}"
+	ProjectSection(SolutionItems) = preProject
+		..\Sample Input Files\1_ExcelToXML.xlsx = ..\Sample Input Files\1_ExcelToXML.xlsx
+		..\Sample Input Files\3_ExcelToJSON.xlsx = ..\Sample Input Files\3_ExcelToJSON.xlsx
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +48,10 @@ Global
 		{69D17071-68FE-4D86-ACF9-CB3374D31FD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69D17071-68FE-4D86-ACF9-CB3374D31FD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69D17071-68FE-4D86-ACF9-CB3374D31FD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE649693-FBFE-41B2-9772-44154A85DBB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE649693-FBFE-41B2-9772-44154A85DBB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE649693-FBFE-41B2-9772-44154A85DBB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE649693-FBFE-41B2-9772-44154A85DBB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +61,7 @@ Global
 		{B3F8498E-B936-495C-9B95-D2AFC600749A} = {FC529935-BEBA-416D-8310-FC6C32004928}
 		{3A15B81C-6FDA-4094-9DA4-000EA7EC9A5C} = {DC0F6095-0012-46CE-A74E-F547A046F851}
 		{69D17071-68FE-4D86-ACF9-CB3374D31FD4} = {DC0F6095-0012-46CE-A74E-F547A046F851}
+		{AE649693-FBFE-41B2-9772-44154A85DBB2} = {DC0F6095-0012-46CE-A74E-F547A046F851}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {208A6BFA-F3FE-4AE8-98C4-AF31FEC10D4A}

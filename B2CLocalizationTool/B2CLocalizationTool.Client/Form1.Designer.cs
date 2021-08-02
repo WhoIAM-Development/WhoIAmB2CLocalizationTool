@@ -48,15 +48,27 @@ namespace B2CLocalizationTool.Client
             this.convertToExcelButton = new System.Windows.Forms.Button();
             this.xmlInputChooseFileButton = new System.Windows.Forms.Button();
             this.xmlInputFilePathTextBox = new System.Windows.Forms.TextBox();
+            this.tabPageToJson = new System.Windows.Forms.TabPage();
+            this.toJson_labelPrefix = new System.Windows.Forms.Label();
+            this.toJson_textFilePrefix = new System.Windows.Forms.TextBox();
+            this.toJson_btnChooseOutput = new System.Windows.Forms.Button();
+            this.toJson_labelOutput = new System.Windows.Forms.Label();
+            this.toJson_textOutputPath = new System.Windows.Forms.TextBox();
+            this.toJson_labelInput = new System.Windows.Forms.Label();
+            this.toJson_btnConvert = new System.Windows.Forms.Button();
+            this.toJson_btnChooseInput = new System.Windows.Forms.Button();
+            this.toJson_textInputPath = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.convertToXMLTab.SuspendLayout();
             this.convertToExcelTab.SuspendLayout();
+            this.tabPageToJson.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.convertToXMLTab);
             this.tabControl1.Controls.Add(this.convertToExcelTab);
+            this.tabControl1.Controls.Add(this.tabPageToJson);
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -253,6 +265,106 @@ namespace B2CLocalizationTool.Client
             this.xmlInputFilePathTextBox.TabIndex = 10;
             this.xmlInputFilePathTextBox.TextChanged += new System.EventHandler(this.xmlInputFilePathTextBox_TextChanged);
             // 
+            // tabPageToJson
+            // 
+            this.tabPageToJson.Controls.Add(this.toJson_labelPrefix);
+            this.tabPageToJson.Controls.Add(this.toJson_textFilePrefix);
+            this.tabPageToJson.Controls.Add(this.toJson_btnChooseOutput);
+            this.tabPageToJson.Controls.Add(this.toJson_labelOutput);
+            this.tabPageToJson.Controls.Add(this.toJson_textOutputPath);
+            this.tabPageToJson.Controls.Add(this.toJson_labelInput);
+            this.tabPageToJson.Controls.Add(this.toJson_btnConvert);
+            this.tabPageToJson.Controls.Add(this.toJson_btnChooseInput);
+            this.tabPageToJson.Controls.Add(this.toJson_textInputPath);
+            this.tabPageToJson.Location = new System.Drawing.Point(4, 24);
+            this.tabPageToJson.Name = "tabPageToJson";
+            this.tabPageToJson.Size = new System.Drawing.Size(793, 424);
+            this.tabPageToJson.TabIndex = 2;
+            this.tabPageToJson.Text = "To JSON";
+            this.tabPageToJson.UseVisualStyleBackColor = true;
+            // 
+            // toJson_labelPrefix
+            // 
+            this.toJson_labelPrefix.AutoSize = true;
+            this.toJson_labelPrefix.Location = new System.Drawing.Point(8, 150);
+            this.toJson_labelPrefix.Name = "toJson_labelPrefix";
+            this.toJson_labelPrefix.Size = new System.Drawing.Size(97, 15);
+            this.toJson_labelPrefix.TabIndex = 18;
+            this.toJson_labelPrefix.Text = "Output file prefix";
+            // 
+            // toJson_textFilePrefix
+            // 
+            this.toJson_textFilePrefix.Location = new System.Drawing.Point(8, 168);
+            this.toJson_textFilePrefix.Name = "toJson_textFilePrefix";
+            this.toJson_textFilePrefix.Size = new System.Drawing.Size(575, 23);
+            this.toJson_textFilePrefix.TabIndex = 17;
+            // 
+            // toJson_btnChooseOutput
+            // 
+            this.toJson_btnChooseOutput.Location = new System.Drawing.Point(610, 103);
+            this.toJson_btnChooseOutput.Name = "toJson_btnChooseOutput";
+            this.toJson_btnChooseOutput.Size = new System.Drawing.Size(158, 23);
+            this.toJson_btnChooseOutput.TabIndex = 16;
+            this.toJson_btnChooseOutput.Text = "Choose output folder";
+            this.toJson_btnChooseOutput.UseVisualStyleBackColor = true;
+            this.toJson_btnChooseOutput.Click += new System.EventHandler(this.toJson_btnChooseOutput_Click);
+            // 
+            // toJson_labelOutput
+            // 
+            this.toJson_labelOutput.AutoSize = true;
+            this.toJson_labelOutput.Location = new System.Drawing.Point(8, 85);
+            this.toJson_labelOutput.Name = "toJson_labelOutput";
+            this.toJson_labelOutput.Size = new System.Drawing.Size(157, 15);
+            this.toJson_labelOutput.TabIndex = 15;
+            this.toJson_labelOutput.Text = "Ouput folder path (optional)";
+            // 
+            // toJson_textOutputPath
+            // 
+            this.toJson_textOutputPath.Enabled = false;
+            this.toJson_textOutputPath.Location = new System.Drawing.Point(8, 103);
+            this.toJson_textOutputPath.Name = "toJson_textOutputPath";
+            this.toJson_textOutputPath.Size = new System.Drawing.Size(575, 23);
+            this.toJson_textOutputPath.TabIndex = 14;
+            // 
+            // toJson_labelInput
+            // 
+            this.toJson_labelInput.AutoSize = true;
+            this.toJson_labelInput.Location = new System.Drawing.Point(8, 22);
+            this.toJson_labelInput.Name = "toJson_labelInput";
+            this.toJson_labelInput.Size = new System.Drawing.Size(89, 15);
+            this.toJson_labelInput.TabIndex = 13;
+            this.toJson_labelInput.Text = "Input file path *";
+            // 
+            // toJson_btnConvert
+            // 
+            this.toJson_btnConvert.Enabled = false;
+            this.toJson_btnConvert.Location = new System.Drawing.Point(320, 223);
+            this.toJson_btnConvert.Name = "toJson_btnConvert";
+            this.toJson_btnConvert.Size = new System.Drawing.Size(158, 23);
+            this.toJson_btnConvert.TabIndex = 12;
+            this.toJson_btnConvert.Text = "Convert to JSON";
+            this.toJson_btnConvert.UseVisualStyleBackColor = true;
+            this.toJson_btnConvert.Click += new System.EventHandler(this.toJson_btnConvert_Click);
+            // 
+            // toJson_btnChooseInput
+            // 
+            this.toJson_btnChooseInput.Location = new System.Drawing.Point(610, 40);
+            this.toJson_btnChooseInput.Name = "toJson_btnChooseInput";
+            this.toJson_btnChooseInput.Size = new System.Drawing.Size(158, 23);
+            this.toJson_btnChooseInput.TabIndex = 11;
+            this.toJson_btnChooseInput.Text = "Choose file";
+            this.toJson_btnChooseInput.UseVisualStyleBackColor = true;
+            this.toJson_btnChooseInput.Click += new System.EventHandler(this.toJson_btnChooseInput_Click);
+            // 
+            // toJson_textInputPath
+            // 
+            this.toJson_textInputPath.Enabled = false;
+            this.toJson_textInputPath.Location = new System.Drawing.Point(8, 40);
+            this.toJson_textInputPath.Name = "toJson_textInputPath";
+            this.toJson_textInputPath.Size = new System.Drawing.Size(575, 23);
+            this.toJson_textInputPath.TabIndex = 10;
+            this.toJson_textInputPath.TextChanged += new System.EventHandler(this.toJson_textInputPath_TextChanged);
+            // 
             // BaseForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -266,6 +378,8 @@ namespace B2CLocalizationTool.Client
             this.convertToXMLTab.PerformLayout();
             this.convertToExcelTab.ResumeLayout(false);
             this.convertToExcelTab.PerformLayout();
+            this.tabPageToJson.ResumeLayout(false);
+            this.tabPageToJson.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -291,6 +405,16 @@ namespace B2CLocalizationTool.Client
         private System.Windows.Forms.TextBox xmlInputFilePathTextBox;
         private System.Windows.Forms.ComboBox outputFileFormatComboBox;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TabPage tabPageToJson;
+        private System.Windows.Forms.Button toJson_btnChooseOutput;
+        private System.Windows.Forms.Label toJson_labelOutput;
+        private System.Windows.Forms.TextBox toJson_textOutputPath;
+        private System.Windows.Forms.Label toJson_labelInput;
+        private System.Windows.Forms.Button toJson_btnConvert;
+        private System.Windows.Forms.Button toJson_btnChooseInput;
+        private System.Windows.Forms.TextBox toJson_textInputPath;
+        private System.Windows.Forms.Label toJson_labelPrefix;
+        private System.Windows.Forms.TextBox toJson_textFilePrefix;
     }
 }
 

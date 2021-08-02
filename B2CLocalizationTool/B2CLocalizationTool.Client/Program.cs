@@ -1,6 +1,6 @@
 using B2CLocalizationTool.Infrastructure;
-using B2CLocalizationTool.Service;
-using B2CLocalizationTool.Service.Abstract;
+using B2CLocalizationTool.Shared;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Windows.Forms;
@@ -9,6 +9,7 @@ namespace B2CLocalizationTool.Client
 {
     static class Program
     {
+        public static IConfiguration Configuration;
         /// <summary>
         ///  The main entry point for the application.
         /// </summary>
@@ -19,6 +20,10 @@ namespace B2CLocalizationTool.Client
             // https://github.com/ExcelDataReader/ExcelDataReader
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
 
+            var builder = new ConfigurationBuilder()
+               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            Configuration = builder.Build();
+
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -26,6 +31,9 @@ namespace B2CLocalizationTool.Client
             var services = new ServiceCollection();
             RegisterServices.ConfigureServices(services);
             services.AddScoped<BaseForm>();
+
+            var toJsonOptions = Configuration.GetSection("ToJson");
+            services.Configure<ToJsonSettings>(toJsonOptions);
 
             using (ServiceProvider serviceProvider = services.BuildServiceProvider())
             {

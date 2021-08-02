@@ -1,9 +1,8 @@
 ﻿using B2CLocalizationTool.Service.Abstract;
 using B2CLocalizationTool.Service.Extensions;
 using B2CLocalizationTool.Service.Utility;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Xml;
@@ -12,6 +11,13 @@ namespace B2CLocalizationTool.Service
 {
     public class ExternalDataService: IExternalDataService
     {
+        private readonly ILogger<ExternalDataService> _logger;
+
+        public ExternalDataService(ILogger<ExternalDataService> logger)
+        {
+            this._logger = logger;
+        }
+
         public DataSet ReadFileAsDataSet(string fileName)
         {
             var pathExtension = Path.GetExtension(fileName);
@@ -42,7 +48,6 @@ namespace B2CLocalizationTool.Service
         {
             return XMLUtility.ReadXMLFile(fileName);
         }
-
 
         public string WriteXmlToFile(XmlDocument document, string inputPath = null, string outputPath = null)
         {

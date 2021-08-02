@@ -12,7 +12,7 @@ namespace B2CLocalizationTool.Service.Extensions
     internal static class LocalizationModelExtension
     {
         // issuccess defaults to true for now
-        internal static ResultDTO ToResultDTO(this DataSet dataSet)
+        internal static ResultDTO ToXmlResultDTO(this DataSet dataSet)
         {
             var errors = new List<string>();
             var warnings = new List<string>();

@@ -1,8 +1,13 @@
 ﻿using B2CLocalizationTool.Service.Abstract;
 using B2CLocalizationTool.Service.Extensions;
 using B2CLocalizationTool.Service.Model;
+using B2CLocalizationTool.Service.Model.ToJSON;
+using B2CLocalizationTool.Shared;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace B2CLocalizationTool.Service
@@ -12,10 +17,87 @@ namespace B2CLocalizationTool.Service
         private readonly IExternalDataService _externalDataService;
         private readonly ILogger<LocalizationService> _logger;
 
-        public LocalizationService(IExternalDataService externalDataService, ILogger<LocalizationService> logger)
+        private readonly ToJsonSettings _toJsonOptions;
+
+        public LocalizationService(IExternalDataService externalDataService, 
+            ILogger<LocalizationService> logger,
+            IOptions<ToJsonSettings> toJsonOptions)
         {
             this._externalDataService = externalDataService;
             this._logger = logger;
+            this._toJsonOptions = toJsonOptions.Value;
+        }
+
+        public IResultDTO ReadInputAndWriteToJson(string inputPath, string outputFileNamePrefix, string outputPath = null)
+        {
+            try
+            {
+                _logger.LogInformation($"Converting Excel to JSON from {inputPath} to {outputPath}");
+                var dataSet = _externalDataService.ReadFileAsDataSet(inputPath);
+
+                var result = dataSet.ToJsonResultDTO(_toJsonOptions);
+
+                foreach (var warning in result.Warnings)
+                {
+                    _logger.LogWarning(warning);
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    _logger.LogError(error);
+                }
+
+                // How are collections represented in JSON file? - Currently not considering them.
+
+                if (result.IsSuccess)
+                {
+                    var localizationGropuedByResourceId = result.LocalizedStrings.GroupBy(x => x.Resource).ToList();
+
+                    if (string.IsNullOrEmpty(outputFileNamePrefix))
+                    {
+                        outputFileNamePrefix = _toJsonOptions.FilePrefix;
+                    }
+
+                    string absoluteInputPath = Path.GetDirectoryName(inputPath);
+
+                    if (string.IsNullOrEmpty(outputPath))
+                    {
+                        outputPath = absoluteInputPath;
+                    }
+
+                    outputPath = $"{outputPath}\\{outputFileNamePrefix}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                    Directory.CreateDirectory(outputPath);
+
+                    foreach (IGrouping<string, LocalizedStringModel> item in localizationGropuedByResourceId)
+                    {
+                        var completeFileName = $"{outputPath}\\{outputFileNamePrefix}_{item.First().Resource}.json";
+
+                        using (StreamWriter file = File.CreateText(completeFileName))
+                        {
+                            var data = new
+                            {
+                                LocalizedStrings = item
+                            };
+
+                            JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings() { Formatting = Formatting.Indented });
+                            serializer.Serialize(file, data);
+                        }
+
+                        _logger.LogInformation($"Created JSON file from {inputPath} to {completeFileName}");
+                    }
+
+                    result.OutputPath = outputPath;
+                }
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                return new ResultDTO()
+                {
+                    IsSuccess = false
+                };
+            }
         }
 
         public IResultDTO ReadInputAndWriteToXml(string inputPath, string outputPath = null)
@@ -26,7 +108,7 @@ namespace B2CLocalizationTool.Service
 
                 var dataSet = _externalDataService.ReadFileAsDataSet(inputPath);
 
-                var result = dataSet.ToResultDTO();
+                var result = dataSet.ToXmlResultDTO();
 
                 foreach (var warning in result.Warnings)
                 {

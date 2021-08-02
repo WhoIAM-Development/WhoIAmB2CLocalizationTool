@@ -1,4 +1,6 @@
 ﻿using B2CLocalizationTool.Service.Abstract;
+using B2CLocalizationTool.Shared;
+using Microsoft.Extensions.Options;
 using System;
 using System.Windows.Forms;
 
@@ -7,16 +9,21 @@ namespace B2CLocalizationTool.Client
     public partial class BaseForm : Form
     {
         private readonly ILocalizationService _localizationService;
+        private readonly ToJsonSettings _toJsonOptions;
 
-        public BaseForm(ILocalizationService localizationService)
+        public BaseForm(ILocalizationService localizationService,
+            IOptions<ToJsonSettings> toJsonOptions)
         {
             this._localizationService = localizationService;
+            this._toJsonOptions = toJsonOptions.Value;
             InitializeComponent();
         }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+
+            toJson_textFilePrefix.Text = this._toJsonOptions.FilePrefix;
         }
 
         #region To XML Tab
@@ -140,5 +147,56 @@ namespace B2CLocalizationTool.Client
         }
         #endregion
 
+        #region To Json Tab
+        private void toJson_btnConvert_Click(object sender, EventArgs e)
+        {
+            IResultDTO result = _localizationService.ReadInputAndWriteToJson(toJson_textInputPath.Text, toJson_textFilePrefix.Text,  toJson_textOutputPath.Text);
+
+            if (result.IsSuccess)
+            {
+                toJson_textInputPath.Text = string.Empty;
+                toJson_btnChooseInput.Text = "Choose file";
+
+                MessageBox.Show($"JSON Creation completed. File stored to {result.OutputPath}", "Convert to JSON", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show($"Something went wrong", "Convert to JSON", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void toJson_btnChooseInput_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog file = new OpenFileDialog();
+            if (file.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                toJson_textInputPath.Text = file.FileName;
+                toJson_btnChooseInput.Text = "Choose another file";
+            }
+        }
+
+        private void toJson_btnChooseOutput_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog folderDlg = new FolderBrowserDialog();
+            folderDlg.ShowNewFolderButton = true;
+            DialogResult result = folderDlg.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                toJson_textOutputPath.Text = folderDlg.SelectedPath;
+            }
+        }
+
+        private void toJson_textInputPath_TextChanged(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(toJson_textInputPath.Text))
+            {
+                toJson_btnConvert.Enabled = true;
+            }
+            else
+            {
+                toJson_btnConvert.Enabled = false;
+            }
+        }
+        #endregion
     }
 }

@@ -2,6 +2,7 @@
 using B2CLocalizationTool.Service.Model.ToJSON;
 using B2CLocalizationTool.Service.Utility;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -256,116 +257,127 @@ namespace B2CLocalizationTool.Service.Extensions
         // this method is quite bloated and very inefficient, needs to redo this.
         internal static string ToCSVString(this XmlDocument document)
         {
-            if (document != null)
+            if (document == null)
             {
-                XmlNode lnode = document.SelectSingleNode(Constants.Localization);
-                if (lnode != null && lnode.ChildNodes.Count > 0)
+                throw new Exception("Empty xml document");
+            }
+
+            // To avoid namespace issues. 
+            var xPath = "/*[local-name()='TrustFrameworkPolicy']/*[local-name()='BuildingBlocks']/*[local-name()='Localization']";
+            XmlNode lnode = document.SelectSingleNode(xPath);
+
+            if(lnode == null)
+            {
+                lnode = document.SelectSingleNode(Constants.Localization);
+            }
+
+            if(lnode == null || lnode.ChildNodes.Count == 0)
+            {
+                throw new Exception("Could not find valid Localizatio node");
+            }
+
+            var localizationModels = new List<LocalizationOutputModel>();
+            List<string> languages = new List<string> { };
+            foreach (XmlNode xnode in lnode.SelectNodes(Constants.LocalizedResources))
+            {
+                var resourceId = xnode.Attributes[Constants.Id].Value;
+                var splitArray = resourceId.Split(".");
+                var resourceLanguage = splitArray.Last();
+
+                if (!languages.Contains(resourceLanguage))
                 {
-                    var localizationModels = new List<LocalizationOutputModel>();
-                    List<string> languages = new List<string> { };
-                    foreach (XmlNode xnode in lnode.SelectNodes(Constants.LocalizedResources))
+                    languages.Add(resourceLanguage);
+                }
+
+                var resourceIdWithoutLanguage = string.Join(".", splitArray.SkipLast(1));
+
+                var localziedCollections = xnode.SelectSingleNode(Constants.LocalizedCollections);
+
+                if(localziedCollections != null)
+                {
+                    foreach (XmlNode lcNode in localziedCollections.ChildNodes)
                     {
-                        var resourceId = xnode.Attributes[Constants.Id].Value;
-                        var splitArray = resourceId.Split(".");
-                        var resourceLanguage = splitArray.Last();
+                        var existingCollection = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
+                            && x.ResourceType == Constants.Collection
+                            && x.ElementType == lcNode.Attributes[Constants.ElementType]?.Value
+                            && x.ElementId == lcNode.Attributes[Constants.ElementId]?.Value
+                            && x.TargetCollection == lcNode.Attributes[Constants.TargetCollection]?.Value);
 
-                        if (!languages.Contains(resourceLanguage))
+                        // if it already exists -> no need to add again
+
+                        if (existingCollection == null)
                         {
-                            languages.Add(resourceLanguage);
+                            localizationModels.Add(new LocalizationOutputModel()
+                            {
+                                Resource = resourceIdWithoutLanguage,
+                                ResourceType = Constants.Collection,
+                                ElementType = lcNode.Attributes[Constants.ElementType]?.Value,
+                                ElementId = lcNode.Attributes[Constants.ElementId]?.Value,
+                                TargetCollection = lcNode.Attributes[Constants.TargetCollection]?.Value,
+                            });
                         }
 
-                        var resourceIdWithoutLanguage = string.Join(".", splitArray.SkipLast(1));
-
-                        var localziedCollections = xnode.SelectSingleNode(Constants.LocalizedCollections);
-
-                        if(localziedCollections != null)
+                        // Map collectionValues 
+                        foreach (XmlElement itemElement in lcNode.ChildNodes)
                         {
-                            foreach (XmlNode lcNode in localziedCollections.ChildNodes)
+                            var exisistingCollectionValue = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
+                                && x.ResourceType == Constants.CollectionValues
+                                && x.ElementId == lcNode.Attributes[Constants.ElementId]?.Value
+                                && x.TargetCollection == lcNode.Attributes[Constants.TargetCollection]?.Value
+                                && x.ItemValue == itemElement.Attributes[Constants.Value]?.Value);
+
+                            if(exisistingCollectionValue == null)
                             {
-                                var existingCollection = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
-                                    && x.ResourceType == Constants.Collection
-                                    && x.ElementType == lcNode.Attributes[Constants.ElementType]?.Value
-                                    && x.ElementId == lcNode.Attributes[Constants.ElementId]?.Value
-                                    && x.TargetCollection == lcNode.Attributes[Constants.TargetCollection]?.Value);
-
-                                // if it already exists -> no need to add again
-
-                                if (existingCollection == null)
+                                localizationModels.Add(new LocalizationOutputModel()
                                 {
-                                    localizationModels.Add(new LocalizationOutputModel()
-                                    {
-                                        Resource = resourceIdWithoutLanguage,
-                                        ResourceType = Constants.Collection,
-                                        ElementType = lcNode.Attributes[Constants.ElementType]?.Value,
-                                        ElementId = lcNode.Attributes[Constants.ElementId]?.Value,
-                                        TargetCollection = lcNode.Attributes[Constants.TargetCollection]?.Value,
-                                    });
-                                }
-
-                                // Map collectionValues 
-                                foreach (XmlElement itemElement in lcNode.ChildNodes)
-                                {
-                                    var exisistingCollectionValue = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
-                                        && x.ResourceType == Constants.CollectionValues
-                                        && x.ElementId == lcNode.Attributes[Constants.ElementId]?.Value
-                                        && x.TargetCollection == lcNode.Attributes[Constants.TargetCollection]?.Value
-                                        && x.ItemValue == itemElement.Attributes[Constants.Value]?.Value);
-
-                                    if(exisistingCollectionValue == null)
-                                    {
-                                        localizationModels.Add(new LocalizationOutputModel()
-                                        {
-                                            Resource = resourceIdWithoutLanguage,
-                                            ResourceType = Constants.CollectionValues,
-                                            ElementId = lcNode.Attributes[Constants.ElementId]?.Value,
-                                            TargetCollection = lcNode.Attributes[Constants.TargetCollection]?.Value,
-                                            ItemValue = itemElement.Attributes[Constants.Value]?.Value,
-                                            SelectByDefault = itemElement.Attributes[Constants.SelectByDefault]?.Value,
-                                            LanguageValues = AddToLanguageValues(resourceLanguage, itemElement.Attributes[Constants.Text]?.Value),
-                                        });
-                                    }
-                                    else
-                                    {
-                                        exisistingCollectionValue.LanguageValues = AddToLanguageValues(resourceLanguage, itemElement.Attributes[Constants.Text]?.Value, exisistingCollectionValue.LanguageValues);
-                                    }
-                                }
+                                    Resource = resourceIdWithoutLanguage,
+                                    ResourceType = Constants.CollectionValues,
+                                    ElementId = lcNode.Attributes[Constants.ElementId]?.Value,
+                                    TargetCollection = lcNode.Attributes[Constants.TargetCollection]?.Value,
+                                    ItemValue = itemElement.Attributes[Constants.Value]?.Value,
+                                    SelectByDefault = itemElement.Attributes[Constants.SelectByDefault]?.Value,
+                                    LanguageValues = AddToLanguageValues(resourceLanguage, itemElement.Attributes[Constants.Text]?.Value),
+                                });
                             }
-                        }
-
-                        var localizedStrings = xnode.SelectSingleNode(Constants.LocalizedStrings);
-                        if (localizedStrings != null)
-                        {
-                            foreach (XmlNode lsNode in localizedStrings.ChildNodes)
+                            else
                             {
-                                var existingLocalization = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
-                                    && x.ResourceType == Constants.LocalizedString
-                                    && x.ElementType == lsNode.Attributes[Constants.ElementType]?.Value
-                                    && x.ElementId == lsNode.Attributes[Constants.ElementId]?.Value
-                                    && x.StringId == lsNode.Attributes[Constants.StringId]?.Value);
-                                if (existingLocalization == null)
-                                {
-                                    localizationModels.Add(new LocalizationOutputModel()
-                                    {
-                                        Resource = resourceIdWithoutLanguage,
-                                        ResourceType = Constants.LocalizedString,
-                                        ElementType = lsNode.Attributes[Constants.ElementType]?.Value,
-                                        ElementId = lsNode.Attributes[Constants.ElementId]?.Value,
-                                        StringId = lsNode.Attributes[Constants.StringId]?.Value,
-                                        LanguageValues = AddToLanguageValues(resourceLanguage, lsNode?.InnerText)
-                                    });
-                                }
-                                else
-                                {
-                                    existingLocalization.LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText, existingLocalization.LanguageValues);
-                                }
+                                exisistingCollectionValue.LanguageValues = AddToLanguageValues(resourceLanguage, itemElement.Attributes[Constants.Text]?.Value, exisistingCollectionValue.LanguageValues);
                             }
                         }
                     }
+                }
 
-                    return MapLocalizationModelsToCSVString(localizationModels, languages);
+                var localizedStrings = xnode.SelectSingleNode(Constants.LocalizedStrings);
+                if (localizedStrings != null)
+                {
+                    foreach (XmlNode lsNode in localizedStrings.ChildNodes)
+                    {
+                        var existingLocalization = localizationModels.FirstOrDefault(x => x.Resource == resourceIdWithoutLanguage
+                            && x.ResourceType == Constants.LocalizedString
+                            && x.ElementType == lsNode.Attributes[Constants.ElementType]?.Value
+                            && x.ElementId == lsNode.Attributes[Constants.ElementId]?.Value
+                            && x.StringId == lsNode.Attributes[Constants.StringId]?.Value);
+                        if (existingLocalization == null)
+                        {
+                            localizationModels.Add(new LocalizationOutputModel()
+                            {
+                                Resource = resourceIdWithoutLanguage,
+                                ResourceType = Constants.LocalizedString,
+                                ElementType = lsNode.Attributes[Constants.ElementType]?.Value,
+                                ElementId = lsNode.Attributes[Constants.ElementId]?.Value,
+                                StringId = lsNode.Attributes[Constants.StringId]?.Value,
+                                LanguageValues = AddToLanguageValues(resourceLanguage, lsNode?.InnerText)
+                            });
+                        }
+                        else
+                        {
+                            existingLocalization.LanguageValues = AddToLanguageValues(resourceLanguage, lsNode.InnerText, existingLocalization.LanguageValues);
+                        }
+                    }
                 }
             }
-            return null;
+
+            return MapLocalizationModelsToCSVString(localizationModels, languages);
         }
 
         internal static string MapLocalizedJSONToCSVString(this List<LocalizedJson> localizedJsons, List<string> languages)

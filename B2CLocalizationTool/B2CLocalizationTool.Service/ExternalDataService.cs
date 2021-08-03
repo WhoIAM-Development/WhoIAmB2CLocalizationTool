@@ -40,7 +40,14 @@ namespace B2CLocalizationTool.Service
         {
             if (fileFormat.ToLower().Trim() == "csv")
             {
-                return ExcelCsvUtility.WriteCSVFile(document.ToCSVString(), inputPath, outputPath, _appSettings.OverwriteFiles);
+                var csvString = document.ToCSVString();
+
+                if (string.IsNullOrEmpty(csvString))
+                {
+                    throw new Exception("Could not create CSV string");
+                }
+
+                return ExcelCsvUtility.WriteCSVFile(csvString, inputPath, outputPath, _appSettings.OverwriteFiles);
             }
             else
             {

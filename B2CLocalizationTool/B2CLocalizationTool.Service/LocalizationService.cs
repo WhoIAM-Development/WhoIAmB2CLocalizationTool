@@ -137,7 +137,7 @@ namespace B2CLocalizationTool.Service
                 if (result.IsSuccess)
                 {
                     var localizationGropuedByResourceId = result.LocalizationResources.GroupBy(x => x.Resource).ToList();
-                    var xmlDocument = localizationGropuedByResourceId.ToXml();
+                    var xmlDocument = localizationGropuedByResourceId.ToXml(result.LanguageCodes, _appSettings);
                     result.OutputPath = _externalDataService.WriteXmlToFile(xmlDocument, inputPath, outputPath);
 
                     _logger.LogInformation($"Completed converting Excel to XML from {inputPath} to {result.OutputPath}");

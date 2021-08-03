@@ -36,9 +36,11 @@ Currenty there are 4 different parts to this tool
 # 1. Conversion of Excel/CSV file to Xml file.  
 * The sample input file can be found in "Sample Input Files/1_ExcelToXML.xlsx".  
 * Please follow the same column names and format.  
-* For adding a new language, add an extra column to the end. 
+* For adding a new language, add an extra column to the end.  
+* The configuration LocalizationTool:ToXML:SupportedLanguages:Enabled to trigger whether to output SupportedLanguages node to the output xml.  
+  The comment in configuration will be added as first element inside the node if it's enabled.  
 * Currently the languages should start at column number 8 and otherwise could run it to issues.
-* To do -> Move the column schema to configurations to allow flexibility.
+* To do -> Move the column schema to configurations to allow flexibility.  
 
 
 # 2. Conversion of Xml to CSV 

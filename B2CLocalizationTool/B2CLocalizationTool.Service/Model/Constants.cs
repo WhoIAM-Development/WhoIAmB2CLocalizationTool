@@ -6,6 +6,14 @@
         internal static string ResourceType = "ResourceType";
 
         internal static string Localization = "Localization";
+        internal static string Enabled = "Enabled";
+
+        internal static string SupportedLanguages = "SupportedLanguages";
+        internal static string SupportedLanguage = "SupportedLanguage";
+        internal static string DefaultLanguage = "DefaultLanguage";
+
+        internal static string MergeBehavior = "MergeBehavior";
+        internal static string ReplaceAll = "ReplaceAll";
 
         internal static string LocalizedResources = "LocalizedResources";
         internal static string Id = "Id";

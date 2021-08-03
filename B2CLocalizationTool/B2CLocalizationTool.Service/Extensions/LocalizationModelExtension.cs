@@ -1,6 +1,7 @@
 ﻿using B2CLocalizationTool.Service.Model;
 using B2CLocalizationTool.Service.Model.ToJSON;
 using B2CLocalizationTool.Service.Utility;
+using B2CLocalizationTool.Shared;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,8 @@ namespace B2CLocalizationTool.Service.Extensions
             if (dataSet != null && dataSet.Tables != null && dataSet.Tables.Count > 0 && dataSet.Tables[0].Rows != null && dataSet.Tables[0].Rows.Count > 0)
             {
                 var list = new List<LocalizationInputModel>();
+
+                var languages = new List<string>();
 
                 foreach (DataRow row in dataSet.Tables[0].Rows)
                 {
@@ -110,9 +113,12 @@ namespace B2CLocalizationTool.Service.Extensions
 
                     for (int i = Constants.LanguageIndex; i < row.ItemArray.Length; i++)
                     {
+
+                        var langaugeCode = row.Table.Columns[i].ToString();
+
                         var model = new LocalizationInputModel
                         {
-                            Resource = $"{row.ToSafeString(Constants.Resource)}.{row.Table.Columns[i]}",
+                            Resource = $"{row.ToSafeString(Constants.Resource)}.{langaugeCode}",
                             ResourceType = row.ToSafeString(Constants.ResourceType),
                             ElementType = row.ToSafeString(Constants.ElementType),
                             ElementId = row.ToSafeString(Constants.ElementId),
@@ -123,18 +129,17 @@ namespace B2CLocalizationTool.Service.Extensions
                             SelectByDefault = row.ToSafeNullableBool(Constants.SelectByDefault)
                         };
 
-                        //// Resource missing
-
-                        //if (string.IsNullOrEmpty(row.ToSafeString(Constants.Resource)))
-                        //{
-                        //    warnings.Add($"Empty Resource value found for language {row.Table.Columns[i]} at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(model)}");
-                        //}
-
                         // Langauge missing - it will be empty for LocalizedCollections
 
                         if (string.IsNullOrEmpty(model.LanguageValue) && (model.ResourceType != Constants.Collection))
                         {
-                            warnings.Add($"Empty language value found for language {row.Table.Columns[i]} at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(model)}");
+                            warnings.Add($"Empty language value found for language {langaugeCode} at Row : {rowNumber}, Data: {JsonConvert.SerializeObject(model)}");
+                        }
+
+                        //Keeping it here inorder to avoid situations where there could be an invalid column -> can be removed once a valid schema config is established
+                        if (!languages.Contains(langaugeCode) && !string.IsNullOrEmpty(model.LanguageValue))
+                        {
+                            languages.Add(langaugeCode);
                         }
 
                         list.Add(model);
@@ -144,16 +149,46 @@ namespace B2CLocalizationTool.Service.Extensions
                 resultDTO.LocalizationResources = list;
                 resultDTO.Errors = errors;
                 resultDTO.Warnings = warnings;
+                resultDTO.LanguageCodes = languages;
+            } 
+            else
+            {
+                throw new Exception("Invalid input file");
             }
 
             return resultDTO;
         }
-        internal static XmlDocument ToXml(this IEnumerable<IGrouping<string, LocalizationInputModel>> localizationResources)
+        internal static XmlDocument ToXml(this IEnumerable<IGrouping<string, LocalizationInputModel>> localizationResources, IEnumerable<string> languageCodes, AppSettings appSettings)
         {
             XmlDocument doc = new XmlDocument();
-            XmlDeclaration declaire = doc.CreateXmlDeclaration("1.0", "utf-8", null);
             XmlElement rootnode = doc.CreateElement(Constants.Localization);
-            doc.InsertBefore(declaire, doc.DocumentElement);
+            rootnode.SetAttribute(Constants.Enabled, "true");
+
+            if (appSettings.ToXML.SupportedLanguages.Enabled)
+            {
+                // create supported languages
+                XmlElement supportedLanguagesNode = doc.CreateElement(Constants.SupportedLanguages);
+                supportedLanguagesNode.SetAttribute(Constants.DefaultLanguage, appSettings.ToXML.SupportedLanguages.DefaultLanguageCode);
+                supportedLanguagesNode.SetAttribute(Constants.MergeBehavior, Constants.ReplaceAll);
+
+                if (!string.IsNullOrEmpty(appSettings.ToXML.SupportedLanguages.Comment))
+                {
+                    supportedLanguagesNode.AppendChild(doc.CreateComment(appSettings.ToXML.SupportedLanguages.Comment));
+                }
+                
+                foreach (var language in languageCodes)
+                {
+                    XmlElement supportedLanguageNode = doc.CreateElement(Constants.SupportedLanguage);
+                    supportedLanguageNode.InnerText = language;
+
+                    supportedLanguagesNode.AppendChild(supportedLanguageNode);
+                }
+
+                if (supportedLanguagesNode.ChildNodes.Count > 0)
+                {
+                    rootnode.AppendChild(supportedLanguagesNode);
+                }
+            }
 
             foreach (var resources in localizationResources)
             {

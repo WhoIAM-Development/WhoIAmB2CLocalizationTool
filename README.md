@@ -42,7 +42,8 @@ Currenty there are 4 different parts to this tool
 
 
 # 2. Conversion of Xml to CSV 
-* The xml file should have Localization node as the root element.  
+* The xml file should have Localization node as the root element or TrustFrameworkPolicy > BuildingBlocks > Localization.  
+* The xml files pulled directly from policies repository **won't work without replacing the variables**. This is because xml parsing fails. 
 
 # 3. Conversion of Excel/CSV to JSON  
 * The sample input file can be found in "Sample Input Files/1_ExcelToXML.xlsx".  

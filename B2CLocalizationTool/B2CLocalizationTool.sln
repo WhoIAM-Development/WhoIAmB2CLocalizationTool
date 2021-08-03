@@ -23,6 +23,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00 - Files", "00 - Files", 
 	ProjectSection(SolutionItems) = preProject
 		..\Sample Input Files\1_ExcelToXML.xlsx = ..\Sample Input Files\1_ExcelToXML.xlsx
 		..\Sample Input Files\3_ExcelToJSON.xlsx = ..\Sample Input Files\3_ExcelToJSON.xlsx
+		icon.ico = icon.ico
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject

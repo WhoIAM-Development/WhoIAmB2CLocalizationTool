@@ -29,6 +29,7 @@ namespace B2CLocalizationTool.Client
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BaseForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.convertToXMLTab = new System.Windows.Forms.TabPage();
             this.chooseOutputFolderButton = new System.Windows.Forms.Button();
@@ -465,6 +466,7 @@ namespace B2CLocalizationTool.Client
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.tabControl1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BaseForm";
             this.Text = "B2C Localization Tool";
             this.tabControl1.ResumeLayout(false);

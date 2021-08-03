@@ -23,7 +23,6 @@ namespace B2CLocalizationTool.Client
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-
             toJson_textFilePrefix.Text = this._toJsonOptions.FilePrefix;
         }
 
@@ -31,6 +30,8 @@ namespace B2CLocalizationTool.Client
         private void chooseInputFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "Excel or CSV Files|*.xls;*.xlsx;*.xlsm;*.csv;";
+            file.Title = "Open Excel or CSV Files";
             if (file.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 excelInputFilePathTextBox.Text = file.FileName;
@@ -45,7 +46,7 @@ namespace B2CLocalizationTool.Client
             if (result.IsSuccess)
             {
                 MessageBox.Show($"XML Creation completed. File stored to {result.OutputPath}", "Convert to XML", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            } 
+            }
             else
             {
                 MessageBox.Show($"Something went wrong", "Convert to XML", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -80,6 +81,7 @@ namespace B2CLocalizationTool.Client
         private void xmlInputChooseFileButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "XML files|*.xml;";
             if (file.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 xmlInputFilePathTextBox.Text = file.FileName;
@@ -144,7 +146,7 @@ namespace B2CLocalizationTool.Client
         #region To Json Tab
         private void toJson_btnConvert_Click(object sender, EventArgs e)
         {
-            IResultDTO result = _localizationService.ReadInputAndWriteToJson(toJson_textInputPath.Text, toJson_textFilePrefix.Text,  toJson_textOutputPath.Text);
+            IResultDTO result = _localizationService.ReadInputAndWriteToJson(toJson_textInputPath.Text, toJson_textFilePrefix.Text, toJson_textOutputPath.Text);
 
             if (result.IsSuccess)
             {
@@ -159,6 +161,8 @@ namespace B2CLocalizationTool.Client
         private void toJson_btnChooseInput_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "Excel or CSV Files|*.xls;*.xlsx;*.xlsm;*.csv;";
+            file.Title = "Open Excel or CSV Files";
             if (file.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 toJson_textInputPath.Text = file.FileName;
@@ -192,17 +196,17 @@ namespace B2CLocalizationTool.Client
 
         private void jsonToCSV_btnChooseFiles_Click(object sender, EventArgs e)
         {
-            OpenFileDialog open = new OpenFileDialog();
-            open.Filter = "JSON *.json | *.JSON";
-            open.Multiselect = true;
-            open.Title = "Open JSON Files";
+            OpenFileDialog file = new OpenFileDialog();
+            file.Filter = "JSON | *.JSON";
+            file.Multiselect = true;
+            file.Title = "Open JSON Files";
 
-            if (open.ShowDialog() == DialogResult.OK)
+            if (file.ShowDialog() == DialogResult.OK)
             {
                 StringBuilder inputFiles = new StringBuilder();
-                foreach (String file in open.FileNames)
+                foreach (String fileName in file.FileNames)
                 {
-                    inputFiles.AppendLine(file);
+                    inputFiles.AppendLine(fileName);
                 }
                 jsonToCSV_textInputFiles.Text = inputFiles.ToString();
             }

@@ -6,7 +6,7 @@ namespace B2CLocalizationTool.Service.Utility
 {
     internal static class XMLUtility
     {
-        internal static string WriteToXMLFile(XmlDocument xml, string inputPath, string outputPath = null)
+        internal static string WriteToXMLFile(XmlDocument xml, string inputPath, string outputPath, bool overwriteFiles)
         {
             string outputFileName = Path.GetFileNameWithoutExtension(inputPath);
             string absoluteInputPath = Path.GetDirectoryName(inputPath);
@@ -15,7 +15,17 @@ namespace B2CLocalizationTool.Service.Utility
             {
                 outputPath = absoluteInputPath;
             }
-            var completeFileName = $"{outputPath}\\{outputFileName}_{DateTimeOffset.Now.ToUnixTimeSeconds()}.xml";
+            string completeFileName;
+
+            if (overwriteFiles)
+            {
+                completeFileName = $"{outputPath}\\{outputFileName}.xml";
+            }
+            else
+            {
+                completeFileName = $"{outputPath}\\{outputFileName}_{DateTimeOffset.Now.ToUnixTimeSeconds()}.xml";
+            }
+
             xml.Save(completeFileName);
             return completeFileName;
         }

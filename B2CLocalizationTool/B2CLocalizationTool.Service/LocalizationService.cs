@@ -19,15 +19,18 @@ namespace B2CLocalizationTool.Service
         private readonly IExternalDataService _externalDataService;
         private readonly ILogger<LocalizationService> _logger;
 
-        private readonly ToJsonSettings _toJsonOptions;
+        private readonly ToJsonSettings _toJsonSettings;
+        private readonly AppSettings _appSettings;
 
         public LocalizationService(IExternalDataService externalDataService,
             ILogger<LocalizationService> logger,
-            IOptions<ToJsonSettings> toJsonOptions)
+            IOptions<ToJsonSettings> toJsonOptions,
+            IOptions<AppSettings> appSettings)
         {
             this._externalDataService = externalDataService;
             this._logger = logger;
-            this._toJsonOptions = toJsonOptions.Value;
+            this._toJsonSettings = toJsonOptions.Value;
+            this._appSettings = appSettings.Value;
         }
 
         public IResultDTO ReadInputAndWriteToJson(string inputPath, string outputFileNamePrefix, string outputPath = null)
@@ -37,7 +40,7 @@ namespace B2CLocalizationTool.Service
                 _logger.LogInformation($"Converting Excel to JSON from {inputPath} to {outputPath}");
                 var dataSet = _externalDataService.ReadFileAsDataSet(inputPath);
 
-                var result = dataSet.ToJsonResultDTO(_toJsonOptions);
+                var result = dataSet.ToJsonResultDTO(_toJsonSettings);
 
                 foreach (var warning in result.Warnings)
                 {
@@ -57,7 +60,7 @@ namespace B2CLocalizationTool.Service
 
                     if (string.IsNullOrEmpty(outputFileNamePrefix))
                     {
-                        outputFileNamePrefix = _toJsonOptions.FilePrefix;
+                        outputFileNamePrefix = _toJsonSettings.FilePrefix;
                     }
 
                     string absoluteInputPath = Path.GetDirectoryName(inputPath);
@@ -67,7 +70,15 @@ namespace B2CLocalizationTool.Service
                         outputPath = absoluteInputPath;
                     }
 
-                    outputPath = $"{outputPath}\\{outputFileNamePrefix}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                    if (_appSettings.OverwriteFiles)
+                    {
+                        outputPath = $"{outputPath}\\{outputFileNamePrefix}";
+                    }
+                    else
+                    {
+                        outputPath = $"{outputPath}\\{outputFileNamePrefix}_{DateTimeOffset.Now.ToUnixTimeSeconds()}";
+                    }
+
                     Directory.CreateDirectory(outputPath);
 
                     foreach (IGrouping<string, LocalizedStringModel> item in localizationGropuedByResourceId)

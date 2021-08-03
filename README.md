@@ -10,6 +10,12 @@ Currenty there are 4 different parts to this tool
 
 # Common 
 
+### Configuration
+* The configuration **LocalizationTool:OverwriteFiles** dictates whether the output file is overwritten or a new file is created each time.  
+  The name of the output file is the same name as the input file. There is an exception for Excel to JSON conversion which follows a different format.  
+  Default value is true. Hence if the output files already exist, they are overwritten.  
+  If new output files are to be created on each execution, set this flag as false in appsettings.json.  
+
 
 ### About Localized collections  and Localized strings
 

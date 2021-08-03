@@ -1,7 +1,9 @@
 ﻿using B2CLocalizationTool.Service.Abstract;
 using B2CLocalizationTool.Service.Extensions;
 using B2CLocalizationTool.Service.Utility;
+using B2CLocalizationTool.Shared;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Data;
 using System.IO;
@@ -12,10 +14,13 @@ namespace B2CLocalizationTool.Service
     public class ExternalDataService: IExternalDataService
     {
         private readonly ILogger<ExternalDataService> _logger;
+        private readonly AppSettings _appSettings;
 
-        public ExternalDataService(ILogger<ExternalDataService> logger)
+        public ExternalDataService(ILogger<ExternalDataService> logger,
+            IOptions<AppSettings> appSettings)
         {
             this._logger = logger;
+            this._appSettings = appSettings.Value;
         }
 
         public DataSet ReadFileAsDataSet(string fileName)
@@ -35,7 +40,7 @@ namespace B2CLocalizationTool.Service
         {
             if (fileFormat.ToLower().Trim() == "csv")
             {
-                return ExcelCsvUtility.WriteCSVFile(document.ToCSVString(), inputPath, outputPath);
+                return ExcelCsvUtility.WriteCSVFile(document.ToCSVString(), inputPath, outputPath, _appSettings.OverwriteFiles);
             }
             else
             {
@@ -46,7 +51,7 @@ namespace B2CLocalizationTool.Service
 
         public string WriteStringToCSV(string csvString, string inputPath, string outputPath = null)
         {
-            return ExcelCsvUtility.WriteCSVFile(csvString, inputPath, outputPath);
+            return ExcelCsvUtility.WriteCSVFile(csvString, inputPath, outputPath, _appSettings.OverwriteFiles);
         }
 
         public XmlDocument ReadXml(string fileName)
@@ -56,7 +61,7 @@ namespace B2CLocalizationTool.Service
 
         public string WriteXmlToFile(XmlDocument document, string inputPath = null, string outputPath = null)
         {
-            return XMLUtility.WriteToXMLFile(document, inputPath, outputPath);
+            return XMLUtility.WriteToXMLFile(document, inputPath, outputPath, _appSettings.OverwriteFiles);
         }
 
         private DataSet ReadFullExcelFile(string path)

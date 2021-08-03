@@ -31,7 +31,7 @@ namespace B2CLocalizationTool.Service.Utility
             }
         }
 
-        internal static string WriteCSVFile(string input, string inputPath, string outputPath = null)
+        internal static string WriteCSVFile(string input, string inputPath, string outputPath, bool overwriteFiles)
         {
             var outputFileName = Path.GetFileNameWithoutExtension(inputPath);
             string absoluteInputPath = Path.GetDirectoryName(inputPath);
@@ -41,7 +41,16 @@ namespace B2CLocalizationTool.Service.Utility
                 outputPath = absoluteInputPath;
             }
 
-            var completeFileName = $"{outputPath}\\{outputFileName}{DateTimeOffset.Now.ToUnixTimeSeconds()}.csv";
+            string completeFileName;
+            if (overwriteFiles)
+            {
+                completeFileName = $"{outputPath}\\{outputFileName}.csv";
+            }
+            else
+            {
+                completeFileName = $"{outputPath}\\{outputFileName}_{DateTimeOffset.Now.ToUnixTimeSeconds()}.csv";
+            }
+
 
             File.WriteAllText(completeFileName, input, Encoding.UTF8);
 

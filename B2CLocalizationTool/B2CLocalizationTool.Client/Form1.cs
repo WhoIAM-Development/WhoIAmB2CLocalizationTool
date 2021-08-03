@@ -44,9 +44,6 @@ namespace B2CLocalizationTool.Client
 
             if (result.IsSuccess)
             {
-                excelInputFilePathTextBox.Text = string.Empty;
-                chooseInputFileButton.Text = "Choose file";
-
                 MessageBox.Show($"XML Creation completed. File stored to {result.OutputPath}", "Convert to XML", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } 
             else
@@ -108,10 +105,6 @@ namespace B2CLocalizationTool.Client
 
             if (result.IsSuccess)
             {
-                xmlInputFilePathTextBox.Text = string.Empty;
-                xmlInputChooseFileButton.Text = "Choose file";
-                outputFileFormatComboBox.SelectedItem = null;
-
                 MessageBox.Show($"Excel/CSV Creation completed. File stored to {result.OutputPath}", "Convert to CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
@@ -155,9 +148,6 @@ namespace B2CLocalizationTool.Client
 
             if (result.IsSuccess)
             {
-                toJson_textInputPath.Text = string.Empty;
-                toJson_btnChooseInput.Text = "Choose file";
-
                 MessageBox.Show($"JSON Creation completed. File stored to {result.OutputPath}", "Convert to JSON", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
@@ -247,8 +237,6 @@ namespace B2CLocalizationTool.Client
 
             if (result.IsSuccess)
             {
-                jsonToCSV_textInputFiles.Text = string.Empty;
-
                 MessageBox.Show($"Converted selected files CSV and is stored at {result.OutputPath}", "Convert JSON to CSV", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else

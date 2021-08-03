@@ -225,7 +225,10 @@ namespace B2CLocalizationTool.Service.Extensions
 
                             localizedCollectionNode.AppendChild(itemElement);
                         }
-                        localizedCollectionsNode.AppendChild(localizedCollectionNode);
+                        if (localizedCollectionNode.ChildNodes.Count > 0)
+                        {
+                            localizedCollectionsNode.AppendChild(localizedCollectionNode);
+                        }
                     }
                 }
 
